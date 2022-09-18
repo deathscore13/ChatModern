@@ -11,7 +11,7 @@
 #define _chat_modern_included
 
 #if !defined CHAT_MODERN_NEW_SIZE
-#warning CHAT_MODERN_NEW_SIZE was not defined, default value is used (512 * 3)
+#note CHAT_MODERN_NEW_SIZE was not defined, default value is used (512 * 3)
 #define CHAT_MODERN_NEW_SIZE 512 * 3    /**< Новый размер чата (в игре поддерживаются символы меньше 4 байт) */
 #endif
 #define CHAT_MODERN_SIZE 192            /**< Безопасный размер чата в Engine_SourceSDK2006 */
@@ -42,16 +42,16 @@ stock int iChatModernCodesEP1[] = {
 // Цвета для игр поддерживаемых HEX
 stock char sChatModernTagsHEX[][] = {
     /* 00 */    "{default}",
-    /* 01 */    "{white}",
-    /* 02 */    "{darkred}",
-    /* 03 */    "{lightgreen}",
-    /* 04 */    "{green}",
-    /* 05 */    "{lime}",
-    /* 06 */    "{purple}",
-    /* 07 */    "{red}",
-    /* 08 */    "{grey}",
-    /* 09 */    "{yellow}",
-    /* 10 */    "{gold}",
+    /* 01 */    "{gold}",
+    /* 02 */    "{lightgreen}",
+    /* 03 */    "{green}",
+    /* 04 */    "{lime}",
+    /* 05 */    "{white}",
+    /* 06 */    "{darkred}",
+    /* 07 */    "{purple}",
+    /* 08 */    "{red}",
+    /* 09 */    "{grey}",
+    /* 10 */    "{yellow}",
     /* 11 */    "{blue}",
     /* 12 */    "{darkblue}",
     /* 13 */    "{bluegrey}",
@@ -60,16 +60,16 @@ stock char sChatModernTagsHEX[][] = {
 };
 stock char sChatModernCodesHEX[][] = {
     /* 00 */    {0x01},
-    /* 01 */    "\x07FFFFFF",
-    /* 02 */    "\x07FF0000",
-    /* 03 */    {0x03},
-    /* 04 */    {0x04},
-    /* 05 */    {0x05},
-    /* 06 */    "\x07B880EF",
-    /* 07 */    "\x07FF4040",
-    /* 08 */    "\x07C9C9C9",
-    /* 09 */    "\x07ECE479",
-    /* 10 */    "\x07E0AD39",
+    /* 01 */    {0x01},
+    /* 02 */    {0x03},
+    /* 03 */    {0x04},
+    /* 04 */    {0x05},
+    /* 05 */    "\x07FFFFFF",
+    /* 06 */    "\x07FF0000",
+    /* 07 */    "\x07B880EF",
+    /* 08 */    "\x07FF4040",
+    /* 09 */    "\x07C9C9C9",
+    /* 10 */    "\x07ECE479",
     /* 11 */    "\x075C96D6",
     /* 12 */    "\x074C6AFF",
     /* 13 */    "\x07B0C2D8",
