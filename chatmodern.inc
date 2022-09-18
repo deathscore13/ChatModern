@@ -12,9 +12,9 @@
 
 #if !defined CHAT_MODERN_NEW_SIZE
 #warning CHAT_MODERN_NEW_SIZE was not defined, default value is used (512 * 3)
-#define CHAT_MODERN_NEW_SIZE 512 * 3
+#define CHAT_MODERN_NEW_SIZE 512 * 3    /**< Новый размер чата (в игре поддерживаются символы меньше 4 байт) */
 #endif
-#define CHAT_MODERN_SIZE 192    /**< Безопасный размер чата в Engine_SourceSDK2006 */
+#define CHAT_MODERN_SIZE 192            /**< Безопасный размер чата в Engine_SourceSDK2006 */
 
 /**
  * Проверяет поддерживает игра HEX или нет
