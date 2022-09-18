@@ -124,6 +124,31 @@ stock int iChatModernCodes[] = {
 };
 
 
+#if !defined SPCOMP_MOD
+/**
+ * Возвращает конец мультибайтовой строки
+ * 
+ * @param buffer		Буфер для проверки
+ * @param len			Длина строки
+ * 
+ * @return				Первый недействительный байт
+ */
+stock int EndMultibyteStr(const char[] buffer, int len)
+{
+    int bytes, previous;
+    while (bytes <= len)
+    {
+        if (!buffer[bytes] || bytes == len)
+            return bytes;
+        
+        previous = GetCharBytes(buffer[bytes]);
+        bytes += previous;
+    }
+    return bytes - previous;
+}
+#endif
+
+
 enum struct ChatModern
 {
     EngineVersion iEngine;
