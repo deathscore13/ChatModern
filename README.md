@@ -55,32 +55,6 @@
 ```
 
 <br><br>
-## Зависимости
-1. Сток `EndMultibyteStr`:
-```sp
-/**
- * Возвращает конец мультибайтовой строки
- * 
- * @param buffer        Буфер для проверки
- * @param len           Длина строки
- * 
- * @return              Первый недействительный байт
- */
-stock int EndMultibyteStr(const char[] buffer, int len)
-{
-    int bytes, previous;
-    while (bytes <= len)
-    {
-        if (!buffer[bytes] || bytes == len)
-            return bytes;
-        
-        previous = GetCharBytes(buffer[bytes]);
-        bytes += previous;
-    }
-    return bytes - previous;
-}
-```
-<br><br>
 ## Пример использования
 **`main.sp`**:
 ```sp
