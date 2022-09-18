@@ -198,7 +198,7 @@ enum struct ChatModern
      * @param buffer        Буфер
      * @param maxlen        Размер буфера
      * @param tags          Массив с тегами
-     * @param maxtags       Размер массива с буферами
+     * @param maxtags       Размер массива с тегами
      * @param codes         Массив с кодами, соответствующий массиву с тегами
      */
     void ReplaceHEX(char[] buffer, int maxlen, const char[][] tags, int maxtags, const char[][] codes)
@@ -332,6 +332,12 @@ enum struct ChatModern
         this.PrintToChat(client, "%s", buffer);
     }
 
+    /**
+     * Безопасный вывод текста в чат для всех игроков, не переполняющий буфер
+     * 
+     * @param format        Строка для форматирования
+     * @param ...           Аргументы для форматирования
+     */
     void PrintToChatAll(const char[] format, any ...)
     {
         int i;
@@ -347,6 +353,12 @@ enum struct ChatModern
         }
     }
 
+    /**
+     * Замена тегов с цветами и безопасный вывод текста в чат для всех игроков 
+     * 
+     * @param format        Строка для форматирования
+     * @param ...           Аргументы для форматирования
+     */
     void CPrintToChatAll(const char[] format, any ...)
     {
         int i;
