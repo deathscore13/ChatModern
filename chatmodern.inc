@@ -249,20 +249,17 @@ enum struct ChatModern
                 if (this.iEngine == Engine_SourceSDK2006)
                 {
                     while (++i < sizeof(iChatModernCodesEP1))
-                    {
                         if (currpos < (res = FindCharInString(buffer[pos], iChatModernCodesEP1[i], true)))
                             currpos = res;
-                    }
+
                     if (currpos != -1)
                         this.color[0] = buffer[pos + currpos];
                 }
                 else if (CHAT_MODERN_HEX_SUPPORT(this.iEngine))
                 {
                     while (++i < sizeof(iChatModernCodesHEX1))
-                    {
                         if (currpos < (res = FindCharInString(buffer[pos], iChatModernCodesHEX1[i], true)))
                             currpos = res;
-                    }
 
                     if (currpos != -1)
                     {
@@ -279,10 +276,9 @@ enum struct ChatModern
                 else
                 {
                     while (++i < sizeof(iChatModernCodes))
-                    {
                         if (currpos < (res = FindCharInString(buffer[pos], iChatModernCodes[i], true)))
                             currpos = res;
-                    }
+
                     if (currpos != -1)
                     {
                         this.color[0] = ' ';
