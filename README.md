@@ -16,16 +16,16 @@
 **`CS:S OB, TF2, HL2DM и DODS`**:
 ```d
 {default}       - обычный
-{white}         - белый
-{darkred}       - тёмно-красный
+{gold}          - золотой
 {lightgreen}    - светло-зелёный
 {green}         - зелёный
 {lime}          - лаймовый
+{white}         - белый
+{darkred}       - тёмно-красный
 {purple}        - пурпурный
 {red}           - красный
 {grey}          - серый
 {yellow}        - жёлтый
-{gold}          - золотой
 {blue}          - синий
 {darkblue}      - тёмно-синий
 {bluegrey}      - сине-серый
