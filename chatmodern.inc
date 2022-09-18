@@ -152,7 +152,7 @@ enum struct ChatModern
      * @param buffer        Буфер
      * @param maxlen        Размер буфера
      * @param tags          Массив с тегами
-     * @param maxtags       Размер массива с буферами
+     * @param maxtags       Размер массива с тегами
      * @param codes         Массив с кодами, соответствующий массиву с тегами
      */
     void Replace(char[] buffer, int maxlen, const char[][] tags, int maxtags, const int[] codes)
