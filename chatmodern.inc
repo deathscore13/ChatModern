@@ -281,8 +281,13 @@ enum struct ChatModern
 
                     if (currpos != -1)
                     {
-                        this.color[0] = ' ';
-                        this.color[1] = buffer[pos + currpos];
+                        if (this.iEngine == Engine_CSGO)
+                        {
+                            this.color[0] = ' ';
+                            this.color[1] = buffer[pos + currpos];
+                        }
+                        else
+                            this.color[0] = buffer[pos + currpos];
                     }
                 }
                 buffer[endpos] = chr;
