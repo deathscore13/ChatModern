@@ -26,13 +26,13 @@
 #define CHAT_MODERN_HEX_SUPPORT(%1) %1 == Engine_CSS || %1 == Engine_TF2 || %1 == Engine_HL2DM || %1 == Engine_DODS
 
 // Цвета Engine_SourceSDK2006
-stock char sChatModernTagsEP1[][] = {
+stock static char sTagsEP1[][] = {
     /* 00 */    "{default}",
     /* 01 */    "{gold}",
     /* 02 */    "{lightgreen}",
     /* 03 */    "{green}"
 };
-stock int iChatModernCodesEP1[] = {
+stock static int iCodesEP1[] = {
     /* 00 */    0x01,
     /* 01 */    0x01,
     /* 02 */    0x03,
@@ -40,7 +40,7 @@ stock int iChatModernCodesEP1[] = {
 };
 
 // Цвета для игр поддерживаемых HEX
-stock char sChatModernTagsHEX[][] = {
+stock static char sTagsHEX[][] = {
     /* 00 */    "{default}",
     /* 01 */    "{gold}",
     /* 02 */    "{lightgreen}",
@@ -58,7 +58,7 @@ stock char sChatModernTagsHEX[][] = {
     /* 14 */    "{pink}",
     /* 15 */    "{lightred}"
 };
-stock char sChatModernCodesHEX[][] = {
+stock static char sCodesHEX[][] = {
     /* 00 */    {0x01},
     /* 01 */    {0x01},
     /* 02 */    {0x03},
@@ -77,7 +77,7 @@ stock char sChatModernCodesHEX[][] = {
     /* 15 */    "\x07EA4B4B"
 };
 
-stock int iChatModernCodesHEX1[] = {
+stock static int iCodesHEX1[] = {
     /* 00 */    0x01,
     /* 01 */    0x03,
     /* 02 */    0x04,
@@ -86,7 +86,7 @@ stock int iChatModernCodesHEX1[] = {
 };
 
 // Цвета для остальных игр
-stock char sChatModernTags[][] = {
+stock static char sTags[][] = {
     /* 00 */    "{default}",
     /* 01 */    "{white}",
     /* 02 */    "{darkred}",
@@ -104,7 +104,7 @@ stock char sChatModernTags[][] = {
     /* 14 */    "{pink}",
     /* 15 */    "{lightred}"
 };
-stock int iChatModernCodes[] = {
+stock static int iCodes[] = {
     /* 00 */    0x01,
     /* 01 */    0x01,
     /* 02 */    0x02,
@@ -124,8 +124,9 @@ stock int iChatModernCodes[] = {
 };
 
 
-#if !defined SPCOMP_MOD
 /**
+ * Зависимость. Скопировано из spcomp_mod
+ * 
  * Возвращает конец мультибайтовой строки
  * 
  * @param buffer		Буфер для проверки
@@ -133,7 +134,7 @@ stock int iChatModernCodes[] = {
  * 
  * @return				Первый недействительный байт
  */
-stock int EndMultibyteStr(const char[] buffer, int len)
+stock static int EndMultibyteStr(const char[] buffer, int len)
 {
     int bytes, previous;
     while (bytes <= len)
@@ -146,7 +147,6 @@ stock int EndMultibyteStr(const char[] buffer, int len)
     }
     return bytes - previous;
 }
-#endif
 
 
 enum struct ChatModern
@@ -273,8 +273,8 @@ enum struct ChatModern
 
                 if (this.iEngine == Engine_SourceSDK2006)
                 {
-                    while (++i < sizeof(iChatModernCodesEP1))
-                        if (currpos < (res = FindCharInString(buffer[pos], iChatModernCodesEP1[i], true)))
+                    while (++i < sizeof(iCodesEP1))
+                        if (currpos < (res = FindCharInString(buffer[pos], iCodesEP1[i], true)))
                             currpos = res;
 
                     if (currpos != -1)
@@ -282,8 +282,8 @@ enum struct ChatModern
                 }
                 else if (CHAT_MODERN_HEX_SUPPORT(this.iEngine))
                 {
-                    while (++i < sizeof(iChatModernCodesHEX1))
-                        if (currpos < (res = FindCharInString(buffer[pos], iChatModernCodesHEX1[i], true)))
+                    while (++i < sizeof(iCodesHEX1))
+                        if (currpos < (res = FindCharInString(buffer[pos], iCodesHEX1[i], true)))
                             currpos = res;
 
                     if (currpos != -1)
@@ -300,8 +300,8 @@ enum struct ChatModern
                 }
                 else
                 {
-                    while (++i < sizeof(iChatModernCodes))
-                        if (currpos < (res = FindCharInString(buffer[pos], iChatModernCodes[i], true)))
+                    while (++i < sizeof(iCodes))
+                        if (currpos < (res = FindCharInString(buffer[pos], iCodes[i], true)))
                             currpos = res;
 
                     if (currpos != -1)
@@ -349,11 +349,11 @@ enum struct ChatModern
         VFormat(buffer, sizeof(buffer), format, 4);
 
         if (this.iEngine == Engine_SourceSDK2006)
-            this.Replace(buffer, sizeof(buffer), sChatModernTagsEP1, sizeof(sChatModernTagsEP1), iChatModernCodesEP1);
+            this.Replace(buffer, sizeof(buffer), sTagsEP1, sizeof(sTagsEP1), iCodesEP1);
         else if (CHAT_MODERN_HEX_SUPPORT(this.iEngine))
-            this.ReplaceHEX(buffer, sizeof(buffer), sChatModernTagsHEX, sizeof(sChatModernTagsHEX), sChatModernCodesHEX);
+            this.ReplaceHEX(buffer, sizeof(buffer), sTagsHEX, sizeof(sTagsHEX), sCodesHEX);
         else
-            this.Replace(buffer, sizeof(buffer), sChatModernTags, sizeof(sChatModernTags), iChatModernCodes);
+            this.Replace(buffer, sizeof(buffer), sTags, sizeof(sTags), iCodes);
         
         this.PrintToChat(client, "%s", buffer);
     }
