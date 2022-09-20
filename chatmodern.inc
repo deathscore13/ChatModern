@@ -11,7 +11,11 @@
 #define _chat_modern_included
 
 #if !defined CHAT_MODERN_NEW_SIZE
+#if defined SPCOMP_MOD
 #note CHAT_MODERN_NEW_SIZE was not defined, default value is used (512 * 3)
+#else
+#warning CHAT_MODERN_NEW_SIZE was not defined, default value is used (512 * 3)
+#endif
 #define CHAT_MODERN_NEW_SIZE 512 * 3    /**< Новый размер чата (в игре поддерживаются символы меньше 4 байт) */
 #endif
 #define CHAT_MODERN_SIZE 192            /**< Безопасный размер чата в Engine_SourceSDK2006 */
