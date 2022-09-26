@@ -136,7 +136,7 @@ stock static int iCodes[] = {
  * @param buffer		Буфер для проверки
  * @param len			Длина строки
  * 
- * @return				Первый недействительный байт
+ * @return                      Первый недействительный байт
  */
 stock static int EndMultibyteStr(const char[] buffer, int len)
 {
