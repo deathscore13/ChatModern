@@ -287,7 +287,7 @@ enum struct ChatModern
                     (buffer[endpos - 1] == 0x07 || buffer[endpos - 2] == 0x07 || buffer[endpos - 3] == 0x07 || buffer[endpos - 4] == 0x07 ||
                     buffer[endpos - 5] == 0x07 || buffer[endpos - 6] == 0x07 || buffer[endpos - 7] == 0x07))
                     endpos = endpos - 7;
-                else if (8 < endpos &&
+                else if (9 < endpos &&
                     (buffer[endpos - 1] == 0x08 || buffer[endpos - 2] == 0x08 || buffer[endpos - 3] == 0x08 || buffer[endpos - 4] == 0x08 ||
                     buffer[endpos - 5] == 0x08 || buffer[endpos - 6] == 0x08 || buffer[endpos - 7] == 0x08 || buffer[endpos - 8] == 0x08 ||
                     buffer[endpos - 9] == 0x08))
