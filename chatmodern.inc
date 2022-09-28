@@ -137,7 +137,7 @@ stock static int iCodes[] = {
  * @param buffer		Буфер для проверки
  * @param len			Длина строки
  * 
- * @return				Первый недействительный байт
+ * @return              Первый недействительный байт
  */
 stock static int EndMultibyteStr(const char[] buffer, int len)
 {
@@ -292,6 +292,7 @@ enum struct ChatModern
                     buffer[endpos - 5] == 0x08 || buffer[endpos - 6] == 0x08 || buffer[endpos - 7] == 0x08 || buffer[endpos - 8] == 0x08 ||
                     buffer[endpos - 9] == 0x08))
                     endpos = endpos - 9;
+            }
             
             chr = buffer[endpos];
             buffer[endpos] = '\0';
