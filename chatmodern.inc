@@ -86,7 +86,8 @@ stock static int iCodesHEX1[] = {
     /* 01 */    0x03,
     /* 02 */    0x04,
     /* 03 */    0x05,
-    /* 04 */    0x07
+    /* 04 */    0x07,
+    /* 05 */    0x08
 };
 
 // Цвета для остальных игр
@@ -136,7 +137,7 @@ stock static int iCodes[] = {
  * @param buffer		Буфер для проверки
  * @param len			Длина строки
  * 
- * @return                      Первый недействительный байт
+ * @return				Первый недействительный байт
  */
 stock static int EndMultibyteStr(const char[] buffer, int len)
 {
@@ -156,7 +157,7 @@ stock static int EndMultibyteStr(const char[] buffer, int len)
 enum struct ChatModern
 {
     EngineVersion iEngine;
-    char color[8];
+    char color[10];
 
     /**
      * Инициализация. Должна выполняться самой первой ЕДИНОЖДЫ
@@ -218,6 +219,25 @@ enum struct ChatModern
 
                 i = -1;
             }
+            else if (buffer[i] == '{' && buffer[i + 1] == '#' && buffer[i + 10] == '}')
+            {
+                buffer[i] = 0x08;
+                buffer[i + 1] = buffer[i + 2];
+                buffer[i + 2] = buffer[i + 3];
+                buffer[i + 3] = buffer[i + 4];
+                buffer[i + 4] = buffer[i + 5];
+                buffer[i + 5] = buffer[i + 6];
+                buffer[i + 6] = buffer[i + 7];
+                buffer[i + 7] = buffer[i + 8];
+                buffer[i + 8] = buffer[i + 9];
+                
+                i += 8;
+                while (buffer[i] && buffer[++i])
+                    buffer[i] = buffer[i + 2];
+                buffer[i + 1] = '\0';
+
+                i = -1;
+            }
         }
     }
 
@@ -261,10 +281,17 @@ enum struct ChatModern
                 endpos = res + 1;
             
             endpos += pos;
-            if ((CHAT_MODERN_HEX_SUPPORT(this.iEngine)) && 7 < endpos &&
-                (buffer[endpos - 1] == 0x07 || buffer[endpos - 2] == 0x07 || buffer[endpos - 3] == 0x07 || buffer[endpos - 4] == 0x07 ||
-                buffer[endpos - 5] == 0x07 || buffer[endpos - 6] == 0x07 || buffer[endpos - 7] == 0x07))
-                endpos = endpos - 7;
+            if (CHAT_MODERN_HEX_SUPPORT(this.iEngine))
+            {
+                if (7 < endpos &&
+                    (buffer[endpos - 1] == 0x07 || buffer[endpos - 2] == 0x07 || buffer[endpos - 3] == 0x07 || buffer[endpos - 4] == 0x07 ||
+                    buffer[endpos - 5] == 0x07 || buffer[endpos - 6] == 0x07 || buffer[endpos - 7] == 0x07))
+                    endpos = endpos - 7;
+                else if (8 < endpos &&
+                    (buffer[endpos - 1] == 0x08 || buffer[endpos - 2] == 0x08 || buffer[endpos - 3] == 0x08 || buffer[endpos - 4] == 0x08 ||
+                    buffer[endpos - 5] == 0x08 || buffer[endpos - 6] == 0x08 || buffer[endpos - 7] == 0x08 || buffer[endpos - 8] == 0x08 ||
+                    buffer[endpos - 9] == 0x08))
+                    endpos = endpos - 9;
             
             chr = buffer[endpos];
             buffer[endpos] = '\0';
@@ -293,7 +320,7 @@ enum struct ChatModern
                     if (currpos != -1)
                     {
                         currpos += pos;
-                        if (buffer[currpos] == 0x07)
+                        if (buffer[currpos] == 0x07 || buffer[currpos] == 0x08)
                             strcopy(this.color, sizeof(ChatModern::color), buffer[currpos]);
                         else
                         {
