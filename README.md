@@ -16,9 +16,9 @@
 **`CS:S OB, TF2, HL2DM и DODS`**:
 ```d
 {default}       - обычный
-{lightgreen}    - светло-зелёный
 {green}         - зелёный
 {lime}          - лаймовый
+{lightgreen}    - светло-зелёный
 {darkred}       - тёмно-красный
 {purple}        - пурпурный
 {red}           - красный
