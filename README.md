@@ -81,7 +81,7 @@
 // подключение ChatModern
 #include <chatmodern>
 
-// объявление объекта ChatModern
+// объявление переменной
 ChatModern chatm;
 
 public void OnPluginStart()
