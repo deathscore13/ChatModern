@@ -553,10 +553,10 @@ int GetEntityByTeam(int team, int exception = 0)
             SetEntProp(iResource, Prop_Send, "m_iTeam", team, 1, i);
             RequestFrame(RF_RestoreTeam, i << 4 | iTeam[i] << 2 | team);
             iTeam[i] = team;
-            break;
+            return i;
         }
     }
-    return MaxClients < i ? 0 : i;
+    return 0;
 }
 
 void RF_UsedNull()
