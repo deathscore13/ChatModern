@@ -367,7 +367,6 @@ void SayText2(EngineVersion engine, int client, int entity, char[] buffer)
         buffer[endpos] = '\0';
         i = strcopy(sz(colorBuffer), color);
         strcopy(colorBuffer[i], sizeof(colorBuffer) - i, buffer[pos]);
-        PrintToServer(colorBuffer);
 
         Handle msg = StartMessageEx(iSayText2, clients, 1);
         if (CHAT_MODERN_PROTOBUF_SUPPORT(engine))
