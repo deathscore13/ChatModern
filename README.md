@@ -78,11 +78,6 @@
 ```
 <br><br>
 ## Установка
-Если `tv_enable` = 1:
-1. Переместить **`chatmodern.smx`** в **`addons/sourcemod/plugins`**;
-2. Перезапустить сервер.
-
-Если `tv_enable` = 0:
 1. Переместить **`chatmodern.smx`** в **`addons/sourcemod/plugins`**;
 2. Перезапустить сервер, сменить карту или выполнить `sm plugins load chatmodern`. 
 
