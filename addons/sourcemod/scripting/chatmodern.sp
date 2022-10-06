@@ -194,7 +194,6 @@ public void OnClientDisconnect_Post(int client)
     }
     else
     {
-        PrintToServer("%d", GetClientCount(true));
         int i;
         while (++i <= MaxClients)
         {
