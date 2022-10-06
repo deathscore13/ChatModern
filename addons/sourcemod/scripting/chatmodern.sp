@@ -50,8 +50,8 @@ public void OnPluginStart()
 {
     if (!(NOBOTS = FindCommandLineParam("-nobots")))
     {
-        (hCvar = CreateConVar("sm_chatmodern_bots", "2", "Количество добавляемых ботов для командного цвета, если на сервере менее 3-х игроков", _,
-            true, 0.0, true, 2.0)).AddChangeHook(ConVarChanged_Bots);
+        (hCvar = CreateConVar("sm_chatmodern_bots", "2", "Количество добавляемых ботов для командного цвета, если на сервере менее 3-х игроков",
+            _, true, 0.0, true, 2.0)).AddChangeHook(ConVarChanged_Bots);
         iBotsCV = hCvar.IntValue;
 
         (hCvar = CreateConVar("sm_chatmodern_name1", "DeathScore13", "Имя 1-го бота")).AddChangeHook(ConVarChanged_Name);
@@ -182,7 +182,7 @@ public void OnClientPutInServer(int client)
     }
 }
 
-public void OnClientDisconnect(int client)
+public void OnClientDisconnect_Post(int client)
 {
     if (iBots[BOT1] == client)
     {
@@ -194,6 +194,7 @@ public void OnClientDisconnect(int client)
     }
     else
     {
+        PrintToServer("%d", GetClientCount(true));
         int i;
         while (++i <= MaxClients)
         {
@@ -216,7 +217,7 @@ public void OnClientDisconnect(int client)
 
         switch (GetClientCount(true))
         {
-            case 2:
+            case 1:
             {
                 if (iBotsCV && !iBots[BOT1])
                 {
@@ -230,7 +231,7 @@ public void OnClientDisconnect(int client)
                     CreateFakeClient(sBotName[BOT2]);
                 }
             }
-            case 3:
+            case 2:
             {
                 if (iBotsCV && !iBots[BOT1])
                 {
