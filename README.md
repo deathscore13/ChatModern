@@ -76,6 +76,17 @@
 {team2}         - команда 2
 {team3}         - команда 3
 ```
+<br><br>
+## Установка
+Если `tv_enable` = 1:
+1. Переместить **`chatmodern.smx`** в **`addons/sourcemod/plugins`**;
+2. Перезапустить сервер.
+
+Если `tv_enable` = 0:
+1. Переместить **`chatmodern.smx`** в **`addons/sourcemod/plugins`**;
+2. Перезапустить сервер, сменить карту или выполнить `sm plugins load chatmodern`. 
+
+<br>Настройки находятся в **`cfg/chatmodern.cfg`**.
 
 <br><br>
 ## Пример использования
