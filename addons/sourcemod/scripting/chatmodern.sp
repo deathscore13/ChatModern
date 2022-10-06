@@ -19,7 +19,6 @@
 #include <chatmodern>
 
 #define TV_CVAR 0   /**< sm_chatmodern_tv */
-#define TV_SLOT 1   /**< Слот SourceTV */
 
 #define BOT1    0   /**< Бот 1 */
 #define BOT2    1   /**< Бот 2 */
@@ -27,7 +26,6 @@
 int iBotsCV, iBots[2], iResource, iTeam[MAXPLAYERS + 1];
 char sBotName[2][MAX_NAME_LENGTH];
 bool bCREATE_EX(bBool, MAXPLAYERS + 1);
-ConVar hCvar;
 
 #define NOBOTS view_as<bool>(iTeam[0])
 
@@ -48,24 +46,26 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+    ConVar cvar;
     if (!(NOBOTS = FindCommandLineParam("-nobots")))
     {
-        (hCvar = CreateConVar("sm_chatmodern_bots", "2", "Количество добавляемых ботов для командного цвета, если на сервере менее 3-х игроков",
+        (cvar = CreateConVar("sm_chatmodern_bots", "2", "Количество добавляемых ботов для командного цвета, если на сервере менее 3-х игроков",
             _, true, 0.0, true, 2.0)).AddChangeHook(ConVarChanged_Bots);
-        iBotsCV = hCvar.IntValue;
+        iBotsCV = cvar.IntValue;
 
-        (hCvar = CreateConVar("sm_chatmodern_name1", "DeathScore13", "Имя 1-го бота")).AddChangeHook(ConVarChanged_Name);
-        hCvar.GetString(sz2(sBotName, BOT1));
+        (cvar = CreateConVar("sm_chatmodern_name1", "DeathScore13", "Имя 1-го бота")).AddChangeHook(ConVarChanged_Name);
+        cvar.GetString(sz2(sBotName, BOT1));
 
-        (hCvar = CreateConVar("sm_chatmodern_name2", "DeathScore133", "Имя 2-го бота")).AddChangeHook(ConVarChanged_Name);
-        hCvar.GetString(sz2(sBotName, BOT2));
+        (cvar = CreateConVar("sm_chatmodern_name2", "DeathScore133", "Имя 2-го бота")).AddChangeHook(ConVarChanged_Name);
+        cvar.GetString(sz2(sBotName, BOT2));
     }
 
-    (hCvar = CreateConVar("sm_chatmodern_tv", "1", "Если tv_enable = 1 и SourceTV не появится после выполнения server.cfg, то карта \
-        перезапустится (SourceTV тоже считается игроком)", _, true, 0.0, true, 1.0)).AddChangeHook(ConVarChanged_TV);
-    bSET_EX(bBool, TV_CVAR, hCvar.BoolValue);
+    (cvar = CreateConVar("sm_chatmodern_tv", "1", "Если tv_enable = 1 и SourceTV не появится, то карта перезапустится \
+        (SourceTV тоже считается игроком)", _, true, 0.0, true, 1.0)).AddChangeHook(ConVarChanged_TV);
+    bSET_EX(bBool, TV_CVAR, cvar.BoolValue);
 
-    hCvar = FindConVar("tv_enable");
+    (cvar = FindConVar("tv_enable")).AddChangeHook(ConVarChanged_tv_enable);
+    ConVarChanged_tv_enable(cvar, NULL_STRING, NULL_STRING);
 
     AutoExecConfig(true, "chatmodern");
     HookEvent("player_team", EventHook_player_team);
@@ -110,6 +110,24 @@ void ConVarChanged_TV(ConVar convar, const char[] oldValue, const char[] newValu
     bSET_EX(bBool, TV_CVAR, convar.BoolValue);
 }
 
+void ConVarChanged_tv_enable(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+    if (convar.BoolValue && bGET_EX(bBool, TV_CVAR))
+    {
+        int i;
+        while (++i <= MaxClients)
+            if (IsClientConnected(i) && IsClientSourceTV(i))
+                break;
+        
+        if (MaxClients < i)
+        {
+            char map[PLATFORM_MAX_PATH];
+            GetCurrentMap(sz(map));
+            ServerCommand("changelevel \"%s\"", map);
+        }
+    }
+}
+
 Action EventHook_player_team(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"))
@@ -117,27 +135,30 @@ Action EventHook_player_team(Event event, const char[] name, bool dontBroadcast)
         iTeam[client] = event.GetInt("team");
 }
 
-public void OnConfigsExecuted()
+public void OnMapStart()
 {
     iResource = GetPlayerResourceEntity();
-    if (hCvar.BoolValue && bGET_EX(bBool, TV_CVAR) && (!IsClientInGame(TV_SLOT) || !IsClientSourceTV(TV_SLOT)))
-    {
-        char map[PLATFORM_MAX_PATH];
-        GetCurrentMap(sz(map));
-        ServerCommand("map \"%s\"", map);
-    }
 }
 
 public void OnClientPutInServer(int client)
 {
+    RequestFrame(RF_OnClientPutInServer, GetClientUserId(client));
+}
+
+void RF_OnClientPutInServer(int userid)
+{
+    int client = GetClientOfUserId(userid);
+    if (!client)
+        return;
+    
     if (IsFakeClient(client))
     {
         if (iBots[BOT1] != client && iBots[BOT2] != client && 3 < GetClientCount(true))
         {
             if (iBots[BOT1])
-                KickClient(iBots[BOT1]);
+                KickClientEx(iBots[BOT1]);
             else if (iBots[BOT2])
-                KickClient(iBots[BOT2]);
+                KickClientEx(iBots[BOT2]);
         }
     }
     else
@@ -147,36 +168,24 @@ public void OnClientPutInServer(int client)
             case 1:
             {
                 if (iBotsCV && !iBots[BOT1])
-                {
-                    iBots[BOT1] = GetNextSlot();
-                    CreateFakeClient(sBotName[BOT1]);
-                }
+                    iBots[BOT1] = CreateFakeClient(sBotName[BOT1]);
 
                 if (iBotsCV == 2 && !iBots[BOT2])
-                {
-                    iBots[BOT2] = GetNextSlot();
-                    CreateFakeClient(sBotName[BOT2]);
-                }
+                    iBots[BOT2] = CreateFakeClient(sBotName[BOT2]);
             }
             case 2:
             {
                 if (iBotsCV && !iBots[BOT1])
-                {
-                    iBots[BOT1] = GetNextSlot();
-                    CreateFakeClient(sBotName[BOT1]);
-                }
+                    iBots[BOT1] = CreateFakeClient(sBotName[BOT1]);
                 else if (iBotsCV == 2 && !iBots[BOT2])
-                {
-                    iBots[BOT2] = GetNextSlot();
-                    CreateFakeClient(sBotName[BOT2]);
-                }
+                    iBots[BOT2] = CreateFakeClient(sBotName[BOT2]);
             }
             case 4:
             {
                 if (iBots[BOT1])
-                    KickClient(iBots[BOT1]);
+                    KickClientEx(iBots[BOT1]);
                 else if (iBots[BOT2])
-                    KickClient(iBots[BOT2]);
+                    KickClientEx(iBots[BOT2]);
             }
         }
     }
@@ -196,15 +205,10 @@ public void OnClientDisconnect_Post(int client)
     {
         int i;
         while (++i <= MaxClients)
-        {
             if (IsClientInGame(i) && !IsFakeClient(i))
-            {
-                i = 0;
                 break;
-            }
-        }
 
-        if (i)
+        if (MaxClients < i)
         {
             if (iBots[BOT1])
                 KickClientEx(iBots[BOT1]);
@@ -219,29 +223,17 @@ public void OnClientDisconnect_Post(int client)
             case 1:
             {
                 if (iBotsCV && !iBots[BOT1])
-                {
-                    iBots[BOT1] = GetNextSlot();
-                    CreateFakeClient(sBotName[BOT1]);
-                }
+                    iBots[BOT1] = CreateFakeClient(sBotName[BOT1]);
 
                 if (iBotsCV == 2 && !iBots[BOT2])
-                {
-                    iBots[BOT2] = GetNextSlot();
-                    CreateFakeClient(sBotName[BOT2]);
-                }
+                    iBots[BOT2] = CreateFakeClient(sBotName[BOT2]);
             }
             case 2:
             {
                 if (iBotsCV && !iBots[BOT1])
-                {
-                    iBots[BOT1] = GetNextSlot();
-                    CreateFakeClient(sBotName[BOT1]);
-                }
+                    iBots[BOT1] = CreateFakeClient(sBotName[BOT1]);
                 else if (iBotsCV == 2 && !iBots[BOT2])
-                {
-                    iBots[BOT2] = GetNextSlot();
-                    CreateFakeClient(sBotName[BOT2]);
-                }
+                    iBots[BOT2] = CreateFakeClient(sBotName[BOT2]);
             }
         }
     }
@@ -254,15 +246,6 @@ public void OnPluginEnd()
 
     if (iBots[BOT2])
         KickClientEx(iBots[BOT2]);
-}
-
-int GetNextSlot()
-{
-    int i;
-    while (++i <= MaxClients)
-        if (!IsClientConnected(i))
-            return i;
-    return 0;
 }
 
 #include "chatmodern_api"
