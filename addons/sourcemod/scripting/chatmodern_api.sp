@@ -115,7 +115,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
     {
         ChatModern.Replace(sz(buffer), sz(ChatModern_sTagsEP1), ChatModern_iCodesEP1);
 
-        if (FindTagsTeam(buffer, sz(ChatModern_sTagsTeamEP1)) == -1)
+        if (FindTagsTeam(sz(buffer), sz(ChatModern_sTagsTeamEP1)) == -1)
         {
             TextMsg(engine, client, buffer);
         }
@@ -129,7 +129,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
             for (;;)
             {
                 color = StrContains(buffer[pos], view_as<char>({3}));
-                team = FindTagsTeam(buffer[pos], sz(ChatModern_sTagsTeamEP1))
+                team = FindTagsTeam(buffer[pos], sizeof(buffer) - pos, sz(ChatModern_sTagsTeamEP1))
                 
                 if (color == -1)
                 {
@@ -157,6 +157,8 @@ int Native_CPrintToChat(Handle plugin, int numParams)
                     CSayText2(engine, client, buffer[pos]);
                     buffer[endpos] = chr;
                 }
+                else
+                    PrintToConsole(client, "exception: %d | %d", color, team);
                 pos = endpos;
             }
         }
@@ -173,7 +175,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
             ChatModern.Replace(sz(buffer), sz(ChatModern_sTags), ChatModern_iCodes);
         }
 
-        if (FindTagsTeam(buffer, sz(ChatModern_sTagsTeam)) == -1)
+        if (FindTagsTeam(sz(buffer), sz(ChatModern_sTagsTeam)) == -1)
         {
             TextMsg(engine, client, buffer);
         }
@@ -187,7 +189,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
             for (;;)
             {
                 color = StrContains(buffer[pos], view_as<char>({3}));
-                team = FindTagsTeam(buffer[pos], sz(ChatModern_sTagsTeam))
+                team = FindTagsTeam(buffer[pos], sizeof(buffer) - pos, sz(ChatModern_sTagsTeam))
 
                 if (color == -1)
                 {
@@ -468,7 +470,7 @@ void CSayText2(EngineVersion engine, int client, char[] buffer)
                 index);
             if (res != -1)
             {
-                endpos = pos + res;
+                endpos += res;
                 chr = buffer[endpos];
                 buffer[endpos] = '\0';
             }
@@ -497,7 +499,7 @@ void CSayText2(EngineVersion engine, int client, char[] buffer)
                 index);
             if (res != -1)
             {
-                endpos = pos + res;
+                endpos += res;
                 chr = buffer[endpos];
                 buffer[endpos] = '\0';
             }
@@ -520,13 +522,13 @@ void CSayText2(EngineVersion engine, int client, char[] buffer)
     }
 }
 
-int FindTagsTeam(const char[] buffer, const char[][] tags, int maxtags)
+int FindTagsTeam(const char[] buffer, int maxlen, const char[][] tags, int maxtags)
 {
-    int i = -1, res;
+    int i = -1, pos = maxlen, res;
     while (++i < maxtags)
-        if ((res = StrContains(buffer, tags[i], CHAT_MODERN_TAGS_CSENSITIVE)) != -1)
-            return res;
-    return -1;
+        if ((res = StrContains(buffer, tags[i], CHAT_MODERN_TAGS_CSENSITIVE)) != -1 && res < pos)
+            pos = res;
+    return pos == maxlen ? -1 : pos;
 }
 
 int GetEntityByTeam(int team, int exception = 0)

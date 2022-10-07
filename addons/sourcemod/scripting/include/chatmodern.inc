@@ -431,6 +431,12 @@ methodmap ChatModern < Handle
      * Заменяет теги цветов команд до следующего тега
      * Например до {team1} в "{team}бла бла {team}бла {team1}бла {team}бла"
      * 
+     * @param buffer        Буфер
+     * @param maxlen        Размер буфера
+     * @param tags          Массив с тегами
+     * @param maxtags       Размер массива с тегами
+     * @param index         Индекс текущего тега из массива с тегами
+     * 
      * @return              Позиция цвета другой команды
      */
     public static int ReplaceTeam(char[] buffer, int maxlen, const char[][] tags, int maxtags, int &index)
