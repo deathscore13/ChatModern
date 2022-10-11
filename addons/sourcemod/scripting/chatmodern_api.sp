@@ -1,6 +1,5 @@
 /**
  * Расширенные возможности чата для SourceMod 1.10+
- * Протестировано на CS:S OLD (v34), CS:S OB (Steam) и CS:GO
  * 
  * https://github.com/deathscore13/ChatModern
  */
@@ -31,6 +30,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("ChatModern.SayText2", Native_SayText2);
     CreateNative("ChatModern.CSayText2", Native_CSayText2);
     CreateNative("ChatModern.CPrintToChat", Native_CPrintToChat);
+
+    RegPluginLibrary("chatmodern");
     
     return APLRes_Success;
 }
@@ -66,7 +67,7 @@ int Native_CTextMsg(Handle plugin, int numParams)
         case CHAT_MODERN_HEX_SUPPORT_CASE:
         {
             ChatModern.ReplaceHEX(sz(buffer), sz(ChatModern_sTagsHEX), ChatModern_sCodesHEX);
-            ChatModern.ReplacePersonalHEX(buffer);
+            ChatModern.ReplacePersonalHEX(sz(buffer));
         }
 
         default:
@@ -168,7 +169,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
         if (CHAT_MODERN_HEX_SUPPORT(engine))
         {
             ChatModern.ReplaceHEX(sz(buffer), sz(ChatModern_sTagsHEX), ChatModern_sCodesHEX);
-            ChatModern.ReplacePersonalHEX(buffer);
+            ChatModern.ReplacePersonalHEX(sz(buffer));
         }
         else
         {

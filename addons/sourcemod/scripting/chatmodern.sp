@@ -1,6 +1,5 @@
 /**
  * Расширенные возможности чата для SourceMod 1.10+
- * Протестировано на CS:S OLD (v34), CS:S OB (Steam) и CS:GO
  * 
  * https://github.com/deathscore13/ChatModern
  */
@@ -27,7 +26,7 @@ int iBotsCV, iBots[2], iResource, iTeam[MAXPLAYERS + 1];
 char sBotName[2][MAX_NAME_LENGTH];
 bool bCREATE_EX(bBool, MAXPLAYERS + 1);
 
-#define NOBOTS view_as<bool>(iTeam[0])
+#define BOTS_ENABLED view_as<bool>(iTeam[0])
 
 #define bUSED_NULL() view_as<int>(bBool[0]) &= 1; \
     bBool[1] = false; \
@@ -47,18 +46,20 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     ConVar cvar;
-    if (!(NOBOTS = FindCommandLineParam("-nobots")))
-    {
-        (cvar = CreateConVar("sm_chatmodern_bots", "2", "Количество добавляемых ботов для командного цвета, если на сервере менее 3-х игроков",
-            _, true, 0.0, true, 2.0)).AddChangeHook(ConVarChanged_Bots);
+    BOTS_ENABLED = !FindCommandLineParam("-nobots");
+
+    (cvar = CreateConVar("sm_chatmodern_bots", "2", "Количество добавляемых ботов для командного цвета, если на сервере менее 3-х игроков",
+        _, true, 0.0, true, 2.0)).AddChangeHook(ConVarChanged_Bots);
+    if (BOTS_ENABLED)
         iBotsCV = cvar.IntValue;
 
-        (cvar = CreateConVar("sm_chatmodern_name1", "DeathScore13", "Имя 1-го бота")).AddChangeHook(ConVarChanged_Name);
+    (cvar = CreateConVar("sm_chatmodern_name1", "DeathScore13", "Имя 1-го бота")).AddChangeHook(ConVarChanged_Name);
+    if (BOTS_ENABLED)
         cvar.GetString(sz2(sBotName, BOT1));
 
-        (cvar = CreateConVar("sm_chatmodern_name2", "DeathScore133", "Имя 2-го бота")).AddChangeHook(ConVarChanged_Name);
+    (cvar = CreateConVar("sm_chatmodern_name2", "DeathScore133", "Имя 2-го бота")).AddChangeHook(ConVarChanged_Name);
+    if (BOTS_ENABLED)
         cvar.GetString(sz2(sBotName, BOT2));
-    }
 
     (cvar = CreateConVar("sm_chatmodern_tv", "1", "Если tv_enable = 1 и SourceTV не появится, то карта перезапустится \
         (SourceTV тоже считается игроком)", _, true, 0.0, true, 1.0)).AddChangeHook(ConVarChanged_TV);
@@ -83,25 +84,25 @@ public void OnPluginStart()
 
 void ConVarChanged_Bots(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-    if (NOBOTS)
-        PrintToServer("[ChatModern]: Bot settings disabled due to -nobots");
-    else
+    if (BOTS_ENABLED)
         iBotsCV = convar.IntValue;
+    else
+        PrintToServer("[ChatModern]: Bot settings disabled due to -nobots");
 }
 
 void ConVarChanged_Name(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-    if (NOBOTS)
-    {
-        PrintToServer("[ChatModern]: Bot settings disabled due to -nobots");
-    }
-    else
+    if (BOTS_ENABLED)
     {
         char name[20];
         convar.GetName(sz(name));
 
         int team = StringToInt(name[18]) - 1;
         strcopy(sz2(sBotName, team), newValue);
+    }
+    else
+    {
+        PrintToServer("[ChatModern]: Bot settings disabled due to -nobots");
     }
 }
 
@@ -156,9 +157,9 @@ void RF_OnClientPutInServer(int userid)
         if (iBots[BOT1] != client && iBots[BOT2] != client && 3 < GetClientCount(true))
         {
             if (iBots[BOT1])
-                KickClientEx(iBots[BOT1]);
+                SafeKick(BOT1);
             else if (iBots[BOT2])
-                KickClientEx(iBots[BOT2]);
+                SafeKick(BOT2);
         }
     }
     else
@@ -183,9 +184,9 @@ void RF_OnClientPutInServer(int userid)
             case 4:
             {
                 if (iBots[BOT1])
-                    KickClientEx(iBots[BOT1]);
+                    SafeKick(BOT1);
                 else if (iBots[BOT2])
-                    KickClientEx(iBots[BOT2]);
+                    SafeKick(BOT2);
             }
         }
     }
@@ -211,10 +212,10 @@ public void OnClientDisconnect_Post(int client)
         if (MaxClients < i)
         {
             if (iBots[BOT1])
-                KickClientEx(iBots[BOT1]);
+                SafeKick(BOT1);
 
             if (iBots[BOT2])
-                KickClientEx(iBots[BOT2]);
+                SafeKick(BOT2);
             return;
         }
 
@@ -241,11 +242,19 @@ public void OnClientDisconnect_Post(int client)
 
 public void OnPluginEnd()
 {
-    if (iBots[BOT1])
-        KickClientEx(iBots[BOT1]);
+    SafeKick(BOT1);
+    SafeKick(BOT2);
+}
 
-    if (iBots[BOT2])
-        KickClientEx(iBots[BOT2]);
+void SafeKick(int bot)
+{
+    if (iBots[bot])
+    {
+        if (IsClientConnected(iBots[bot]))
+            KickClient(iBots[bot]);
+        else
+            iBots[bot] = 0;
+    }
 }
 
 #include "chatmodern_api"

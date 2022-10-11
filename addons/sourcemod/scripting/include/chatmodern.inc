@@ -1,6 +1,5 @@
 /**
  * Расширенные возможности чата для SourceMod 1.10+
- * Протестировано на CS:S OLD (v34), CS:S OB (Steam) и CS:GO
  * 
  * https://github.com/deathscore13/ChatModern
  */
@@ -85,12 +84,12 @@ stock char ChatModern_sTagsHEX[][] = {
     /* 06 */    "{red}",
     /* 07 */    "{grey}",
     /* 08 */    "{yellow}",
-    /* 09 */    "{gold}",
-    /* 10 */    "{blue}",
-    /* 11 */    "{darkblue}",
-    /* 12 */    "{bluegrey}",
-    /* 13 */    "{pink}",
-    /* 14 */    "{lightred}"
+    /* 09 */    "{blue}",
+    /* 10 */    "{darkblue}",
+    /* 11 */    "{bluegrey}",
+    /* 12 */    "{pink}",
+    /* 13 */    "{lightred}",
+    /* 14 */    "{gold}"
 };
 stock char ChatModern_sCodesHEX[][] = {
     /* 00 */    {1},
@@ -102,12 +101,12 @@ stock char ChatModern_sCodesHEX[][] = {
     /* 06 */    "\x07FF4040",
     /* 07 */    "\x07C9C9C9",
     /* 08 */    "\x07ECE479",
-    /* 09 */    "\x07E0AD40",
-    /* 10 */    "\x075C96D6",
-    /* 11 */    "\x074C6AFF",
-    /* 12 */    "\x07B0C2D8",
-    /* 13 */    "\x07D22CE3",
-    /* 14 */    "\x07EA4B4B"
+    /* 09 */    "\x075C96D6",
+    /* 10 */    "\x074C6AFF",
+    /* 11 */    "\x07B0C2D8",
+    /* 12 */    "\x07D22CE3",
+    /* 13 */    "\x07EA4B4B",
+    /* 14 */    "\x07E0AD40"
 };
 
 stock int ChatModern_iCodesHEX1[] = {
@@ -134,12 +133,12 @@ stock char ChatModern_sTags[][] = {
     /* 06 */    "{red}",
     /* 07 */    "{grey}",
     /* 08 */    "{yellow}",
-    /* 09 */    "{gold}",
-    /* 10 */    "{blue}",
-    /* 11 */    "{darkblue}",
-    /* 12 */    "{bluegrey}",
-    /* 13 */    "{pink}",
-    /* 14 */    "{lightred}"
+    /* 09 */    "{blue}",
+    /* 10 */    "{darkblue}",
+    /* 11 */    "{bluegrey}",
+    /* 12 */    "{pink}",
+    /* 13 */    "{lightred}",
+    /* 14 */    "{gold}"
 };
 stock int ChatModern_iCodes[] = {
     /* 00 */    1,
@@ -151,7 +150,7 @@ stock int ChatModern_iCodes[] = {
     /* 06 */    7,
     /* 07 */    8,
     /* 08 */    9,
-    /* 09 */    10,
+    /* 09 */    11,
     /* 10 */    12,
     /* 11 */    13,
     /* 12 */    14,
@@ -172,6 +171,9 @@ stock int ChatModern_iTeam[] = {
     /* 02 */    2,
     /* 03 */    3
 };
+
+// Для всех
+stock const char ChatModern_sTagOld[] = "{old}";    /**< Тег для применения предыдущего цвета */
 
 
 methodmap ChatModern < Handle
@@ -377,52 +379,102 @@ methodmap ChatModern < Handle
     }
 
     /**
+     * Поиск персонального HEX тега в буфере
+     * 
+     * @param buffer        Буфер
+     * @param code          Применяемый код (7/8)
+     * @param end           Искать с конца
+     * 
+     * @return              Позиция тега или -1 если не найдено
+     */
+    public static int FindPersonalHEX(char[] buffer, int maxlen, int &code = 0, bool end = false)
+    {
+        if (end)
+        {
+            int i = strlen(buffer);
+            while (0 <= --i)
+            {
+                if (0 <= i - 8 &&
+                    buffer[i] == CHAT_MODERN_HEX_PERSONAL_END && buffer[i - 7] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
+                    buffer[i - 8] == CHAT_MODERN_HEX_PERSONAL_START)
+                {
+                    code = 7;
+                    return i - 8;
+                }
+                else if (0 <= i - 10 &&
+                    buffer[i] == CHAT_MODERN_HEX_PERSONAL_END && buffer[i - 9] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
+                    buffer[i - 10] == CHAT_MODERN_HEX_PERSONAL_START)
+                {
+                    code = 8;
+                    return i - 10;
+                }
+            }
+        }
+        else
+        {
+            int i = -1;
+            while (buffer[++i])
+            {
+                if (i + 8 < maxlen &&
+                    buffer[i] == CHAT_MODERN_HEX_PERSONAL_START && buffer[i + 1] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
+                    buffer[i + 8] == CHAT_MODERN_HEX_PERSONAL_END)
+                {
+                    code = 7;
+                    return i;
+                }
+                else if (i + 10 < maxlen &&
+                    buffer[i] == CHAT_MODERN_HEX_PERSONAL_START && buffer[i + 1] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
+                    buffer[i + 10] == CHAT_MODERN_HEX_PERSONAL_END)
+                {
+                    code = 8;
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Заменяет персональные HEX теги в буфере
      * 
      * @param buffer        Буфер
      */
-    public static void ReplacePersonalHEX(char[] buffer)
+    public static void ReplacePersonalHEX(char[] buffer, int maxlen)
     {
-        int i = -1;
-        while (buffer[++i])
+        int pos, code;
+        while ((pos = ChatModern.FindPersonalHEX(buffer, maxlen, code)) != -1)
         {
-            if (buffer[i] == CHAT_MODERN_HEX_PERSONAL_START && buffer[i + 1] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
-                buffer[i + 8] == CHAT_MODERN_HEX_PERSONAL_END)
+            if (code == 7)
             {
-                buffer[i] = 7;
-                buffer[i + 1] = buffer[i + 2];
-                buffer[i + 2] = buffer[i + 3];
-                buffer[i + 3] = buffer[i + 4];
-                buffer[i + 4] = buffer[i + 5];
-                buffer[i + 5] = buffer[i + 6];
-                buffer[i + 6] = buffer[i + 7];
+                buffer[pos] = 7;
+                buffer[pos + 1] = buffer[pos + 2];
+                buffer[pos + 2] = buffer[pos + 3];
+                buffer[pos + 3] = buffer[pos + 4];
+                buffer[pos + 4] = buffer[pos + 5];
+                buffer[pos + 5] = buffer[pos + 6];
+                buffer[pos + 6] = buffer[pos + 7];
 
-                i += 6;
-                while (buffer[i] && buffer[++i])
-                    buffer[i] = buffer[i + 2];
-                buffer[i + 1] = '\0';
-
-                i = -1;
+                pos += 6;
+                while (buffer[++pos])
+                    buffer[pos] = buffer[pos + 2];
+                buffer[pos + 1] = '\0';
             }
-            else if (buffer[i] == CHAT_MODERN_HEX_PERSONAL_START && buffer[i + 1] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
-                buffer[i + 10] == CHAT_MODERN_HEX_PERSONAL_END)
+            else
             {
-                buffer[i] = 8;
-                buffer[i + 1] = buffer[i + 2];
-                buffer[i + 2] = buffer[i + 3];
-                buffer[i + 3] = buffer[i + 4];
-                buffer[i + 4] = buffer[i + 5];
-                buffer[i + 5] = buffer[i + 6];
-                buffer[i + 6] = buffer[i + 7];
-                buffer[i + 7] = buffer[i + 8];
-                buffer[i + 8] = buffer[i + 9];
+                buffer[pos] = 8;
+                buffer[pos + 1] = buffer[pos + 2];
+                buffer[pos + 2] = buffer[pos + 3];
+                buffer[pos + 3] = buffer[pos + 4];
+                buffer[pos + 4] = buffer[pos + 5];
+                buffer[pos + 5] = buffer[pos + 6];
+                buffer[pos + 6] = buffer[pos + 7];
+                buffer[pos + 7] = buffer[pos + 8];
+                buffer[pos + 8] = buffer[pos + 9];
 
-                i += 8;
-                while (buffer[i] && buffer[++i])
-                    buffer[i] = buffer[i + 2];
-                buffer[i + 1] = '\0';
-
-                i = -1;
+                pos += 8;
+                while (buffer[++pos])
+                    buffer[pos] = buffer[pos + 2];
+                buffer[pos + 1] = '\0';
             }
         }
     }
@@ -439,7 +491,7 @@ methodmap ChatModern < Handle
      * 
      * @return              Позиция цвета другой команды
      */
-    public static int ReplaceTeam(char[] buffer, int maxlen, const char[][] tags, int maxtags, int &index)
+    public static int ReplaceTeam(char[] buffer, int maxlen, const char[][] tags, int maxtags, int &index = 0)
     {
         int i = -1, pos = maxlen, res;
         while (++i < maxtags)
@@ -465,13 +517,13 @@ methodmap ChatModern < Handle
             
             if (pos == maxlen)
             {
-                ReplaceString(buffer, maxlen, tags[index], view_as<char>({3}), true);
+                ReplaceString(buffer, maxlen, tags[index], view_as<char>({3}), CHAT_MODERN_TAGS_CSENSITIVE);
             }
             else
             {
-                res = pos;
                 i = buffer[pos];
                 buffer[pos] = '\0';
+                res = pos;
                 pos -= (strlen(tags[index]) - 1) * ReplaceString(buffer, pos, tags[index], view_as<char>({3}), CHAT_MODERN_TAGS_CSENSITIVE);
                 buffer[res] = i;
                 strcopy(buffer[pos], maxlen - pos, buffer[res]);
@@ -479,4 +531,274 @@ methodmap ChatModern < Handle
         }
         return pos == maxlen ? -1 : pos;
     }
+
+    /**
+     * Замена тега tagOld и кода codeOld на предыдущий тег цвета или команды
+     * 
+     * @param buffer        Буфер
+     * @param maxlen        Размер буфера
+     */
+    public void ReplaceOld(char[] buffer, int maxlen)
+    {
+        char cpy[CHAT_MODERN_NEW_SIZE + CHAT_MODERN_NEW_SIZE_COLOR];
+        int endpos, res, pos, pos2, index, type, i, chr;
+        if (view_as<EngineVersion>(this) == Engine_SourceSDK2006)
+        {
+            while ((endpos = StrContains(buffer, ChatModern_sTagOld)) != -1)
+            {
+                buffer[endpos] = '\0';
+                
+                pos = i = -1;
+                while (++i < sizeof(ChatModern_sTagsEP1))
+                    if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsEP1[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        pos = res;
+                
+                i = -1
+                while (++i < sizeof(ChatModern_sTagsTeamEP1))
+                    if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsTeamEP1[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        pos = res;
+
+                index = type = 0;
+                if (pos != -1)
+                {
+                    chr = buffer[pos];
+                    buffer[pos] = '\0';
+
+                    pos2 = i = -1;
+                    while (++i < sizeof(ChatModern_sTagsEP1))
+                    {
+                        if (pos2 < (res = FindEndSubStr(buffer, ChatModern_sTagsEP1[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        {
+                            pos2 = res;
+                            index = i;
+                        }
+                    }
+
+                    i = -1;
+                    while (++i < sizeof(ChatModern_sTagsTeamEP1))
+                    {
+                        if (pos2 < (res = FindEndSubStr(buffer, ChatModern_sTagsTeamEP1[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        {
+                            pos2 = res;
+                            index = i;
+                            type = 1;
+                        }
+                    }
+
+                    buffer[pos] = chr;
+                }
+
+                if (type)
+                {
+                    pos = endpos + strlen(ChatModern_sTagsTeamEP1[index]);
+                    if (0 < (res = maxlen - pos))
+                    {
+                        strcopy(cpy, sizeof(cpy), buffer[endpos + sizeof(ChatModern_sTagOld) - 1]);
+                        strcopy(buffer[pos], res, cpy);
+                    }
+
+                    res = maxlen - 1;
+                    while (ChatModern_sTagsTeamEP1[index][++i] && endpos < res)
+                        buffer[endpos++] = ChatModern_sTagsTeamEP1[index][i];
+                }
+                else
+                {
+                    pos = endpos + strlen(ChatModern_sTagsEP1[index]);
+                    if (0 < (res = maxlen - pos))
+                    {
+                        strcopy(cpy, sizeof(cpy), buffer[endpos + sizeof(ChatModern_sTagOld) - 1]);
+                        strcopy(buffer[pos], res, cpy);
+                    }
+
+                    res = maxlen - 1;
+                    while (ChatModern_sTagsEP1[index][++i] && endpos < res)
+                        buffer[endpos++] = ChatModern_sTagsEP1[index][i];
+                }
+            }
+        }
+        else if (CHAT_MODERN_HEX_SUPPORT(view_as<EngineVersion>(this)))
+        {
+            while ((endpos = StrContains(buffer, ChatModern_sTagOld)) != -1)
+            {
+                buffer[endpos] = '\0';
+                
+                pos = i = -1;
+                while (++i < sizeof(ChatModern_sTagsHEX))
+                    if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsHEX[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        pos = res;
+                
+                i = -1
+                while (++i < sizeof(ChatModern_sTagsTeam))
+                    if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsTeam[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        pos = res;
+                
+                if (pos < (res = ChatModern.FindPersonalHEX(buffer, maxlen, _, true)))
+                    pos = res;
+
+                index = type = 0;
+                if (pos != -1)
+                {
+                    chr = buffer[pos];
+                    buffer[pos] = '\0';
+
+                    pos2 = i = -1;
+                    while (++i < sizeof(ChatModern_sTagsHEX))
+                    {
+                        if (pos2 < (res = FindEndSubStr(buffer, ChatModern_sTagsHEX[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        {
+                            pos2 = res;
+                            index = i;
+                        }
+                    }
+
+                    i = -1;
+                    while (++i < sizeof(ChatModern_sTagsTeam))
+                    {
+                        if (pos2 < (res = FindEndSubStr(buffer, ChatModern_sTagsTeam[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        {
+                            pos2 = res;
+                            index = i;
+                            type = 1;
+                        }
+                    }
+
+                    if (pos2 < (res = ChatModern.FindPersonalHEX(buffer, maxlen, type, true)))
+                        pos2 = res;
+
+                    buffer[pos] = chr;
+                }
+
+
+                i = -1;
+                if (type == 1)
+                {
+                    pos = endpos + strlen(ChatModern_sTagsTeam[index]);
+                    if (0 < (res = maxlen - pos))
+                    {
+                        strcopy(cpy, sizeof(cpy), buffer[endpos + sizeof(ChatModern_sTagOld) - 1]);
+                        strcopy(buffer[pos], res, cpy);
+                    }
+
+                    res = maxlen - 1;
+                    while (ChatModern_sTagsTeam[index][++i] && endpos < res)
+                        buffer[endpos++] = ChatModern_sTagsTeam[index][i];
+                }
+                else if (type)
+                {
+                    pos = endpos + (type == 7 ? 9 : 11);
+                    if (0 < (res = maxlen - pos))
+                    {
+                        strcopy(cpy, sizeof(cpy), buffer[endpos + sizeof(ChatModern_sTagOld) - 1]);
+                        strcopy(buffer[pos], res, cpy);
+                    }
+
+                    res = maxlen - 1;
+                    pos2--;
+                    while (buffer[++pos2] && endpos < res && endpos < pos)
+                        buffer[endpos++] = buffer[pos2];
+                }
+                else
+                {
+                    pos = endpos + strlen(ChatModern_sTagsHEX[index]);
+                    if (0 < (res = maxlen - pos))
+                    {
+                        strcopy(cpy, sizeof(cpy), buffer[endpos + sizeof(ChatModern_sTagOld) - 1]);
+                        strcopy(buffer[pos], res, cpy);
+                    }
+
+                    res = maxlen - 1;
+                    while (ChatModern_sTagsHEX[index][++i] && endpos < res)
+                        buffer[endpos++] = ChatModern_sTagsHEX[index][i];
+                }
+            }
+        }
+        else
+        {
+            while ((endpos = StrContains(buffer, ChatModern_sTagOld)) != -1)
+            {
+                buffer[endpos] = '\0';
+                
+                pos = i = -1;
+                while (++i < sizeof(ChatModern_sTags))
+                    if (pos < (res = FindEndSubStr(buffer, ChatModern_sTags[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        pos = res;
+                
+                i = -1
+                while (++i < sizeof(ChatModern_sTagsTeam))
+                    if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsTeam[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        pos = res;
+
+                index = type = 0;
+                if (pos != -1)
+                {
+                    chr = buffer[pos];
+                    buffer[pos] = '\0';
+
+                    pos2 = i = -1;
+                    while (++i < sizeof(ChatModern_sTags))
+                    {
+                        if (pos2 < (res = FindEndSubStr(buffer, ChatModern_sTags[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        {
+                            pos2 = res;
+                            index = i;
+                        }
+                    }
+
+                    i = -1;
+                    while (++i < sizeof(ChatModern_sTagsTeam))
+                    {
+                        if (pos2 < (res = FindEndSubStr(buffer, ChatModern_sTagsTeam[i], CHAT_MODERN_TAGS_CSENSITIVE)))
+                        {
+                            pos2 = res;
+                            index = i;
+                            type = 1;
+                        }
+                    }
+
+                    buffer[pos] = chr;
+                }
+
+
+                i = -1;
+                if (type)
+                {
+                    pos = endpos + strlen(ChatModern_sTagsTeam[index]);
+                    if (0 < (res = maxlen - pos))
+                    {
+                        strcopy(cpy, sizeof(cpy), buffer[endpos + sizeof(ChatModern_sTagOld) - 1]);
+                        strcopy(buffer[pos], res, cpy);
+                    }
+
+                    res = maxlen - 1;
+                    while (ChatModern_sTagsTeam[index][++i] && endpos < res)
+                        buffer[endpos++] = ChatModern_sTagsTeam[index][i];
+                }
+                else
+                {
+                    pos = endpos + strlen(ChatModern_sTags[index]);
+                    if (0 < (res = maxlen - pos))
+                    {
+                        strcopy(cpy, sizeof(cpy), buffer[endpos + sizeof(ChatModern_sTagOld) - 1]);
+                        strcopy(buffer[pos], res, cpy);
+                    }
+
+                    res = maxlen - 1;
+                    while (ChatModern_sTags[index][++i] && endpos < res)
+                        buffer[endpos++] = ChatModern_sTags[index][i];
+                }
+            }
+        }
+    }
 }
+
+
+public SharedPlugin __pl_chatmodern = 
+{
+    name = "chatmodern",
+    file = "chatmodern.smx",
+#if defined REQUIRE_PLUGIN
+    required = 1,
+#else
+    required = 0,
+#endif
+};
