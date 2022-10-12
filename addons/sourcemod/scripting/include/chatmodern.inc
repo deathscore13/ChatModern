@@ -40,6 +40,8 @@
 
 #define CHAT_MODERN_PROTOBUF_SUPPORT_CASE Engine_CSS, Engine_TF2, Engine_HL2DM, Engine_DODS  /**< Перечисление игр, поддерживаемых protobuf */
 
+#define CHAT_MODERN_HUD_PRINTTALK 3     /**< TextMsg */
+
 // Цвета Engine_SourceSDK2006
 stock char ChatModern_sTagsEP1[][] = {
     /* 00 */    "{default}",

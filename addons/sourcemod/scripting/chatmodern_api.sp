@@ -11,10 +11,11 @@
 
 #include "chatmodern"
 
-UserMsg iSayText2;
+UserMsg iTextMsg, iSayText2;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+    iTextMsg = GetUserMessageId("TextMsg");
     iSayText2 = GetUserMessageId("SayText2");
 
     MarkNativeAsOptional("Protobuf.SetInt");
@@ -139,7 +140,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
                 }
                 else if (team == -1)
                 {
-                    SayText2(engine, client, 0, buffer[pos]);
+                    TextMsg(engine, client, buffer[pos]);
                     return;
                 }
                 else if (color < team)
@@ -147,7 +148,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
                     endpos += team;
                     chr = buffer[endpos];
                     buffer[endpos] = '\0';
-                    SayText2(engine, client, 0, buffer[pos]);
+                    TextMsg(engine, client, buffer[pos]);
                     buffer[endpos] = chr;
                 }
                 else if (team < color)
@@ -158,8 +159,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
                     CSayText2(engine, client, buffer[pos]);
                     buffer[endpos] = chr;
                 }
-                else
-                    PrintToConsole(client, "exception: %d | %d", color, team);
+
                 pos = endpos;
             }
         }
@@ -199,7 +199,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
                 }
                 else if (team == -1)
                 {
-                    SayText2(engine, client, 0, buffer[pos]);
+                    TextMsg(engine, client, buffer[pos]);
                     return;
                 }
                 else if (color < team)
@@ -207,7 +207,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
                     endpos += team;
                     chr = buffer[endpos];
                     buffer[endpos] = '\0';
-                    SayText2(engine, client, 0, buffer[pos]);
+                    TextMsg(engine, client, buffer[pos]);
                     buffer[endpos] = chr;
                 }
                 else if (team < color)
@@ -226,9 +226,10 @@ int Native_CPrintToChat(Handle plugin, int numParams)
 
 void TextMsg(EngineVersion engine, int client, char[] buffer)
 {
-    char color[CHAT_MODERN_SIZE_COLOR + 1];
+    char color[CHAT_MODERN_SIZE_COLOR + 1], colorBuffer[CHAT_MODERN_SIZE + CHAT_MODERN_SIZE_COLOR];
     color = engine == Engine_CSGO ? " \x01" : "\x01";
-    int pos, endpos, currpos, chr, res, i;
+    int clients[1], pos, endpos, currpos, chr, res, i;
+    clients[0] = client;
     for (;;)
     {
         if (!(endpos = EndMultibyteStr(buffer[pos], CHAT_MODERN_SIZE - 2)))
@@ -259,8 +260,25 @@ void TextMsg(EngineVersion engine, int client, char[] buffer)
 
         chr = buffer[endpos];
         buffer[endpos] = '\0';
+        i = strcopy(sz(colorBuffer), color);
+        strcopy(colorBuffer[i], sizeof(colorBuffer) - i, buffer[pos]);
 
-        PrintToChat(client, "%s%s", color, buffer[pos]);
+        Handle msg = StartMessageEx(iTextMsg, clients, 1);
+        if (CHAT_MODERN_PROTOBUF_SUPPORT(engine))
+        {
+            view_as<Protobuf>(msg).SetInt("msg_dst", CHAT_MODERN_HUD_PRINTTALK);
+            view_as<Protobuf>(msg).AddString("params", colorBuffer);
+            view_as<Protobuf>(msg).AddString("params", "");
+            view_as<Protobuf>(msg).AddString("params", "");
+            view_as<Protobuf>(msg).AddString("params", "");
+            view_as<Protobuf>(msg).AddString("params", "");
+        }
+        else
+        {
+            view_as<BfWrite>(msg).WriteByte(CHAT_MODERN_HUD_PRINTTALK);
+            view_as<BfWrite>(msg).WriteString(colorBuffer);
+        }
+        EndMessage();
 
         if (chr)
         {
