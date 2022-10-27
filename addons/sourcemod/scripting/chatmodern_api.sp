@@ -4,13 +4,6 @@
  * https://github.com/deathscore13/ChatModern
  */
 
-#if defined _chat_modern_api_included
- #endinput
-#endif
-#define _chat_modern_api_included
-
-#include "chatmodern"
-
 UserMsg iTextMsg, iSayText2;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -131,7 +124,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
             for (;;)
             {
                 color = StrContains(buffer[pos], view_as<char>({3}));
-                team = FindTagsTeam(buffer[pos], sizeof(buffer) - pos, sz(ChatModern_sTagsTeamEP1))
+                team = FindTagsTeam(buffer[pos], sizeof(buffer) - pos, sz(ChatModern_sTagsTeamEP1));
                 
                 if (color == -1)
                 {
@@ -190,7 +183,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
             for (;;)
             {
                 color = StrContains(buffer[pos], view_as<char>({3}));
-                team = FindTagsTeam(buffer[pos], sizeof(buffer) - pos, sz(ChatModern_sTagsTeam))
+                team = FindTagsTeam(buffer[pos], sizeof(buffer) - pos, sz(ChatModern_sTagsTeam));
 
                 if (color == -1)
                 {

@@ -240,7 +240,6 @@ methodmap ChatModern < Handle
      */
     public native void CPrintToChat(int client, const char[] format, any ...);
 
-#if !defined SPCOMP_MOD || defined PUBVAR_MAXCLIENTS
     /**
      * Вывод текста в чат для всех игроков, не переполняющий буфер
      * 
@@ -346,7 +345,6 @@ methodmap ChatModern < Handle
             }
         }
     }
-#endif
 
     /**
      * Заменяет теги цветов в буфере в соответствии с кодами
@@ -514,8 +512,10 @@ methodmap ChatModern < Handle
             i = -1;
             pos = maxlen;
             while (++i < maxtags)
+            {
                 if (i != index && (res = StrContains(buffer, tags[i], CHAT_MODERN_TAGS_CSENSITIVE)) != -1 && res < pos)
                     pos = res;
+            }
             
             if (pos == maxlen)
             {
@@ -552,13 +552,17 @@ methodmap ChatModern < Handle
                 
                 pos = i = -1;
                 while (++i < sizeof(ChatModern_sTagsEP1))
+                {
                     if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsEP1[i], CHAT_MODERN_TAGS_CSENSITIVE)))
                         pos = res;
+                }
                 
-                i = -1
+                i = -1;
                 while (++i < sizeof(ChatModern_sTagsTeamEP1))
+                {
                     if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsTeamEP1[i], CHAT_MODERN_TAGS_CSENSITIVE)))
                         pos = res;
+                }
 
                 index = type = 0;
                 if (pos != -1)
@@ -626,13 +630,17 @@ methodmap ChatModern < Handle
                 
                 pos = i = -1;
                 while (++i < sizeof(ChatModern_sTagsHEX))
+                {
                     if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsHEX[i], CHAT_MODERN_TAGS_CSENSITIVE)))
                         pos = res;
+                }
                 
-                i = -1
+                i = -1;
                 while (++i < sizeof(ChatModern_sTagsTeam))
+                {
                     if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsTeam[i], CHAT_MODERN_TAGS_CSENSITIVE)))
                         pos = res;
+                }
                 
                 if (pos < (res = ChatModern.FindPersonalHEX(buffer, maxlen, _, true)))
                     pos = res;
@@ -722,13 +730,17 @@ methodmap ChatModern < Handle
                 
                 pos = i = -1;
                 while (++i < sizeof(ChatModern_sTags))
+                {
                     if (pos < (res = FindEndSubStr(buffer, ChatModern_sTags[i], CHAT_MODERN_TAGS_CSENSITIVE)))
                         pos = res;
+                }
                 
-                i = -1
+                i = -1;
                 while (++i < sizeof(ChatModern_sTagsTeam))
+                {
                     if (pos < (res = FindEndSubStr(buffer, ChatModern_sTagsTeam[i], CHAT_MODERN_TAGS_CSENSITIVE)))
                         pos = res;
+                }
 
                 index = type = 0;
                 if (pos != -1)

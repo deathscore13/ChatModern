@@ -4,11 +4,6 @@
  * https://github.com/deathscore13/ChatModern
  */
 
-#if defined _chat_modern_pl_included
- #endinput
-#endif
-#define _chat_modern_pl_included
-
 #define PUBVAR_MAXCLIENTS
 
 #include <sourcemod>
@@ -85,9 +80,13 @@ public void OnPluginStart()
 void ConVarChanged_Bots(ConVar convar, const char[] oldValue, const char[] newValue)
 {
     if (BOTS_ENABLED)
+    {
         iBotsCV = convar.IntValue;
+    }
     else
+    {
         PrintToServer("[ChatModern]: Bot settings disabled due to -nobots");
+    }
 }
 
 void ConVarChanged_Name(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -117,8 +116,10 @@ void ConVarChanged_tv_enable(ConVar convar, const char[] oldValue, const char[] 
     {
         int i;
         while (++i <= MaxClients)
+        {
             if (IsClientConnected(i) && IsClientSourceTV(i))
                 break;
+        }
         
         if (MaxClients < i)
         {
@@ -131,7 +132,7 @@ void ConVarChanged_tv_enable(ConVar convar, const char[] oldValue, const char[] 
 
 Action EventHook_player_team(Event event, const char[] name, bool dontBroadcast)
 {
-    int client = GetClientOfUserId(event.GetInt("userid"))
+    int client = GetClientOfUserId(event.GetInt("userid"));
     if (client)
         iTeam[client] = event.GetInt("team");
 }
@@ -154,13 +155,9 @@ void RF_OnClientPutInServer(int userid)
     
     if (IsFakeClient(client))
     {
-        if (iBots[BOT1] != client && iBots[BOT2] != client && 3 < GetClientCount(true))
-        {
-            if (iBots[BOT1])
-                SafeKick(BOT1);
-            else if (iBots[BOT2])
+        if (iBots[BOT1] != client && iBots[BOT2] != client && 3 < GetClientCount(true) &&
+            !SafeKick(BOT1))
                 SafeKick(BOT2);
-        }
     }
     else
     {
@@ -177,15 +174,17 @@ void RF_OnClientPutInServer(int userid)
             case 2:
             {
                 if (iBotsCV && !iBots[BOT1])
+                {
                     iBots[BOT1] = CreateFakeClient(sBotName[BOT1]);
+                }
                 else if (iBotsCV == 2 && !iBots[BOT2])
+                {
                     iBots[BOT2] = CreateFakeClient(sBotName[BOT2]);
+                }
             }
             case 4:
             {
-                if (iBots[BOT1])
-                    SafeKick(BOT1);
-                else if (iBots[BOT2])
+                if (!SafeKick(BOT1))
                     SafeKick(BOT2);
             }
         }
@@ -206,16 +205,16 @@ public void OnClientDisconnect_Post(int client)
     {
         int i;
         while (++i <= MaxClients)
+        {
             if (IsClientInGame(i) && !IsFakeClient(i))
                 break;
+        }
 
         if (MaxClients < i)
         {
-            if (iBots[BOT1])
-                SafeKick(BOT1);
-
-            if (iBots[BOT2])
-                SafeKick(BOT2);
+            SafeKick(BOT1);
+            SafeKick(BOT2);
+            
             return;
         }
 
@@ -232,9 +231,13 @@ public void OnClientDisconnect_Post(int client)
             case 2:
             {
                 if (iBotsCV && !iBots[BOT1])
+                {
                     iBots[BOT1] = CreateFakeClient(sBotName[BOT1]);
+                }
                 else if (iBotsCV == 2 && !iBots[BOT2])
+                {
                     iBots[BOT2] = CreateFakeClient(sBotName[BOT2]);
+                }
             }
         }
     }
@@ -246,15 +249,20 @@ public void OnPluginEnd()
     SafeKick(BOT2);
 }
 
-void SafeKick(int bot)
+bool SafeKick(int bot)
 {
     if (iBots[bot])
     {
         if (IsClientConnected(iBots[bot]))
-            KickClient(iBots[bot]);
+        {
+            KickClientEx(iBots[bot]);
+        }
         else
+        {
             iBots[bot] = 0;
+        }
+        
+        return true;
     }
+    return false;
 }
-
-#include "chatmodern_api"
