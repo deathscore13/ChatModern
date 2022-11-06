@@ -178,7 +178,7 @@ stock int ChatModern_iTeam[] = {
 stock const char ChatModern_sTagOld[] = "{old}";    /**< Тег для применения предыдущего цвета */
 
 
-methodmap ChatModern < Handle
+methodmap ChatModern __nullable__
 {
     /**
      * Создание объекта ChatModern
