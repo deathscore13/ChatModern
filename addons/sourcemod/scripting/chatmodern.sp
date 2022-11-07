@@ -4,6 +4,10 @@
  * https://github.com/deathscore13/ChatModern
  */
 
+#if !defined SPCOMP_MOD
+#error Для сборки проекта необходим spcomp_mod
+#endif
+
 #define PUBVAR_MAXCLIENTS
 
 #include <sourcemod>
