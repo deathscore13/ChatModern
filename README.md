@@ -87,6 +87,8 @@
 ## Пример использования
 **`main.sp`**:
 ```sp
+#include <sourcemod>
+
 // подключение ChatModern
 #include <chatmodern>
 
