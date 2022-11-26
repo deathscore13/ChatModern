@@ -87,6 +87,7 @@
 ## Пример использования
 **`main.sp`**:
 ```sp
+#define PUBVAR_MAXCLIENTS
 #include <sourcemod>
 
 // подключение ChatModern
