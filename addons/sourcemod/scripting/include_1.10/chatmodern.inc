@@ -178,6 +178,24 @@ stock int ChatModern_iTeam[] = {
 stock const char ChatModern_sTagOld[] = "{old}";    /**< Тег для применения предыдущего цвета */
 
 
+/**
+ * Поиск последнего вхождения подстроки
+ * 
+ * @param buffer			Буфер для проверки
+ * @param substr			Подстрока
+ * @param caseSensitive		Учитывать регистр (по умолчанию true)
+ * 
+ * @return					Индекс начала последнего вхождения подстроки или -1 если не найдено
+ */
+stock int FindEndSubStr(const char[] buffer, const char[] substr, bool caseSensitive = true)
+{
+    int len = strlen(buffer), pos = 0, res;
+    while (pos < len && (res = StrContains(buffer[pos], substr, caseSensitive)) != -1)
+        pos += res + 1;
+    return pos - 1;
+}
+
+
 methodmap ChatModern __nullable__
 {
     /**
