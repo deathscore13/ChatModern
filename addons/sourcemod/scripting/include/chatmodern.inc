@@ -187,7 +187,7 @@ stock const char ChatModern_sTagOld[] = "{old}";    /**< Тег для прим�
  * 
  * @return                  Индекс начала последнего вхождения подстроки или -1 если не найдено
  */
-stock int FindEndSubStr(const char[] buffer, const char[] substr, bool caseSensitive = true)
+static stock int FindEndSubStr(const char[] buffer, const char[] substr, bool caseSensitive = true)
 {
     int len = strlen(buffer), pos = 0, res;
     while (pos < len && (res = StrContains(buffer[pos], substr, caseSensitive)) != -1)
