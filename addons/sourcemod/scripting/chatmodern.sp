@@ -126,6 +126,7 @@ Action EventHook_player_team(Event event, const char[] name, bool dontBroadcast)
     int client = GetClientOfUserId(event.GetInt("userid"));
     if (client)
         iTeam[client] = event.GetInt("team");
+    return Plugin_Continue;
 }
 
 public void OnMapStart()

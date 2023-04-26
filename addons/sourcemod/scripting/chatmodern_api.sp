@@ -52,19 +52,20 @@ int Native_TextMsg(Handle plugin, int numParams)
 {
     int client = GetNativeCell(2);
     if (IsFakeClient(client))
-        return;
+        return 0;
     
     char buffer[CHAT_MODERN_NEW_SIZE];
     FormatNativeString(0, 3, 4, sizeof(buffer), _, buffer);
 
     TextMsg(GetNativeCell(1), client, buffer);
+    return 1;
 }
 
 int Native_CTextMsg(Handle plugin, int numParams)
 {
     int client = GetNativeCell(2);
     if (IsFakeClient(client))
-        return;
+        return 0;
     
     EngineVersion engine = GetNativeCell(1);
 
@@ -87,37 +88,40 @@ int Native_CTextMsg(Handle plugin, int numParams)
     }
 
     TextMsg(engine, client, buffer);
+    return 1;
 }
 
 int Native_SayText2(Handle plugin, int numParams)
 {
     int client = GetNativeCell(2);
     if (IsFakeClient(client))
-        return;
+        return 0;
     
     char buffer[CHAT_MODERN_NEW_SIZE];
     FormatNativeString(0, 4, 5, sizeof(buffer), _, buffer);
 
     SayText2(GetNativeCell(1), client, GetNativeCell(3), buffer);
+    return 1;
 }
 
 int Native_CSayText2(Handle plugin, int numParams)
 {
     int client = GetNativeCell(2);
     if (IsFakeClient(client))
-        return;
+        return 0;
 
     char buffer[CHAT_MODERN_NEW_SIZE + CHAT_MODERN_NEW_SIZE_COLOR];
     FormatNativeString(0, 3, 4, sizeof(buffer), _, buffer);
 
     CSayText2(GetNativeCell(1), client, buffer);
+    return 1;
 }
 
 int Native_CPrintToChat(Handle plugin, int numParams)
 {
     int client = GetNativeCell(2);
     if (IsFakeClient(client))
-        return;
+        return 0;
     
     EngineVersion engine = GetNativeCell(1);
 
@@ -147,12 +151,12 @@ int Native_CPrintToChat(Handle plugin, int numParams)
                 if (color == -1)
                 {
                     CSayText2(engine, client, buffer[pos]);
-                    return;
+                    return 1;
                 }
                 else if (team == -1)
                 {
                     TextMsg(engine, client, buffer[pos]);
-                    return;
+                    return 1;
                 }
                 else if (color < team)
                 {
@@ -206,12 +210,12 @@ int Native_CPrintToChat(Handle plugin, int numParams)
                 if (color == -1)
                 {
                     CSayText2(engine, client, buffer[pos]);
-                    return;
+                    return 1;
                 }
                 else if (team == -1)
                 {
                     TextMsg(engine, client, buffer[pos]);
-                    return;
+                    return 1;
                 }
                 else if (color < team)
                 {
@@ -233,6 +237,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
             }
         }
     }
+    return 1;
 }
 
 void TextMsg(EngineVersion engine, int client, char[] buffer)
