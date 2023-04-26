@@ -460,11 +460,7 @@ methodmap ChatModern __nullable__
     public static void ReplacePersonalHEX(char[] buffer, int maxlen)
     {
         int pos, code;
-#if SPCOMP_MOD_SYNTAX
-        while ((pos = self::FindPersonalHEX(buffer, maxlen, code)) != -1)
-#else
         while ((pos = ChatModern.FindPersonalHEX(buffer, maxlen, code)) != -1)
-#endif
         {
             if (code == 7)
             {
@@ -664,11 +660,7 @@ methodmap ChatModern __nullable__
                         pos = res;
                 }
                 
-#if SPCOMP_MOD_SYNTAX
-                if (pos < (res = self::FindPersonalHEX(buffer, maxlen, _, true)))
-#else
                 if (pos < (res = ChatModern.FindPersonalHEX(buffer, maxlen, _, true)))
-#endif
                     pos = res;
 
                 index = type = 0;
@@ -698,11 +690,7 @@ methodmap ChatModern __nullable__
                         }
                     }
 
-#if SPCOMP_MOD_SYNTAX
-                    if (pos2 < (res = self::FindPersonalHEX(buffer, maxlen, type, true)))
-#else
                     if (pos2 < (res = ChatModern.FindPersonalHEX(buffer, maxlen, type, true)))
-#endif
                         pos2 = res;
 
                     buffer[pos] = chr;
