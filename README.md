@@ -80,6 +80,11 @@
 {old}           - предыдущий тег
 ```
 <br><br>
+## Требования
+1. SourceMod 1.10+;
+2. [macros.inc](https://github.com/deathscore13/Macros) для сборки проекта.
+
+<br><br>
 ## Установка
 1. Собрать **`chatmodern.sp`** с помощью **`spcomp`**;
 2. Переместить **`chatmodern.smx`** в **`addons/sourcemod/plugins`**;
