@@ -78,7 +78,7 @@
 ```
 <br><br>
 ## Установка
-1. Собрать chatmodern.sp через spcomp;
+1. Собрать **`chatmodern.sp`** с помощью **`spcomp`**;
 2. Переместить **`chatmodern.smx`** в **`addons/sourcemod/plugins`**;
 3. Перезапустить сервер, сменить карту или выполнить `sm plugins load chatmodern`. 
 
