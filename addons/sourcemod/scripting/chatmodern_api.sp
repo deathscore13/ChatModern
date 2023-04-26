@@ -1,10 +1,28 @@
-/**
- * Расширенные возможности чата для SourceMod 1.10+
- * 
- * https://github.com/deathscore13/ChatModern
- */
-
 UserMsg iTextMsg, iSayText2;
+
+
+/**
+ * Возвращает конец мультибайтовой строки
+ * 
+ * @param buffer		Буфер для проверки
+ * @param len			Длина строки
+ * 
+ * @return				Первый недействительный байт
+ */
+stock int EndMultibyteStr(const char[] buffer, int len)
+{
+    int bytes = 0, previous;
+    while (bytes <= len)
+    {
+        if (!buffer[bytes] || bytes == len)
+            return bytes;
+        
+        previous = GetCharBytes(buffer[bytes]);
+        bytes += previous;
+    }
+    return bytes - previous;
+}
+
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -56,16 +74,16 @@ int Native_CTextMsg(Handle plugin, int numParams)
     switch (engine)
     {
         case Engine_SourceSDK2006:
-            ChatModern::Replace(sz(buffer), sz(ChatModern_sTagsEP1), ChatModern_iCodesEP1);
+            ChatModern.Replace(sz(buffer), sz(ChatModern_sTagsEP1), ChatModern_iCodesEP1);
 
         case CHAT_MODERN_HEX_SUPPORT_CASE:
         {
-            ChatModern::ReplaceHEX(sz(buffer), sz(ChatModern_sTagsHEX), ChatModern_sCodesHEX);
-            ChatModern::ReplacePersonalHEX(sz(buffer));
+            ChatModern.ReplaceHEX(sz(buffer), sz(ChatModern_sTagsHEX), ChatModern_sCodesHEX);
+            ChatModern.ReplacePersonalHEX(sz(buffer));
         }
 
         default:
-            ChatModern::Replace(sz(buffer), sz(ChatModern_sTags), ChatModern_iCodes);
+            ChatModern.Replace(sz(buffer), sz(ChatModern_sTags), ChatModern_iCodes);
     }
 
     TextMsg(engine, client, buffer);
@@ -108,7 +126,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
 
     if (engine == Engine_SourceSDK2006)
     {
-        ChatModern::Replace(sz(buffer), sz(ChatModern_sTagsEP1), ChatModern_iCodesEP1);
+        ChatModern.Replace(sz(buffer), sz(ChatModern_sTagsEP1), ChatModern_iCodesEP1);
 
         if (FindTagsTeam(sz(buffer), sz(ChatModern_sTagsTeamEP1)) == -1)
         {
@@ -161,12 +179,12 @@ int Native_CPrintToChat(Handle plugin, int numParams)
     {
         if (CHAT_MODERN_HEX_SUPPORT(engine))
         {
-            ChatModern::ReplaceHEX(sz(buffer), sz(ChatModern_sTagsHEX), ChatModern_sCodesHEX);
-            ChatModern::ReplacePersonalHEX(sz(buffer));
+            ChatModern.ReplaceHEX(sz(buffer), sz(ChatModern_sTagsHEX), ChatModern_sCodesHEX);
+            ChatModern.ReplacePersonalHEX(sz(buffer));
         }
         else
         {
-            ChatModern::Replace(sz(buffer), sz(ChatModern_sTags), ChatModern_iCodes);
+            ChatModern.Replace(sz(buffer), sz(ChatModern_sTags), ChatModern_iCodes);
         }
 
         if (FindTagsTeam(sz(buffer), sz(ChatModern_sTagsTeam)) == -1)
@@ -259,19 +277,21 @@ void TextMsg(EngineVersion engine, int client, char[] buffer)
         Handle msg = StartMessageEx(iTextMsg, clients, 1);
         if (CHAT_MODERN_PROTOBUF_SUPPORT(engine))
         {
-            cast_to(msg, Protobuf);
-            msg.SetInt("msg_dst", CHAT_MODERN_HUD_PRINTTALK);
-            msg.AddString("params", colorBuffer);
-            msg.AddString("params", "");
-            msg.AddString("params", "");
-            msg.AddString("params", "");
-            msg.AddString("params", "");
+#define pb view_as<Protobuf>(msg)
+            pb.SetInt("msg_dst", CHAT_MODERN_HUD_PRINTTALK);
+            pb.AddString("params", colorBuffer);
+            pb.AddString("params", "");
+            pb.AddString("params", "");
+            pb.AddString("params", "");
+            pb.AddString("params", "");
+#undef pb
         }
         else
         {
-            cast_to(msg, BfWrite);
-            msg.WriteByte(CHAT_MODERN_HUD_PRINTTALK);
-            msg.WriteString(colorBuffer);
+#define bf view_as<BfWrite>(msg)
+            bf.WriteByte(CHAT_MODERN_HUD_PRINTTALK);
+            bf.WriteString(colorBuffer);
+#undef bf
         }
         EndMessage();
 
@@ -387,21 +407,23 @@ void SayText2(EngineVersion engine, int client, int entity, char[] buffer)
         Handle msg = StartMessageEx(iSayText2, clients, 1);
         if (CHAT_MODERN_PROTOBUF_SUPPORT(engine))
         {
-            cast_to(msg, Protobuf);
-            msg.SetInt("ent_idx", entity);
-            msg.SetBool("chat", true);
-            msg.SetString("msg_name", colorBuffer);
-            msg.AddString("params", "");
-            msg.AddString("params", "");
-            msg.AddString("params", "");
-            msg.AddString("params", "");
+#define pb view_as<Protobuf>(msg)
+            pb.SetInt("ent_idx", entity);
+            pb.SetBool("chat", true);
+            pb.SetString("msg_name", colorBuffer);
+            pb.AddString("params", "");
+            pb.AddString("params", "");
+            pb.AddString("params", "");
+            pb.AddString("params", "");
+#undef pb
         }
         else
         {
-            cast_to(msg, BfWrite);
-            msg.WriteByte(entity);
-            msg.WriteByte(1);
-            msg.WriteString(colorBuffer);
+#define bf view_as<BfWrite>(msg)
+            bf.WriteByte(entity);
+            bf.WriteByte(1);
+            bf.WriteString(colorBuffer);
+#undef bf
         }
         EndMessage();
 
@@ -482,7 +504,7 @@ void CSayText2(EngineVersion engine, int client, char[] buffer)
     {
         for (;;)
         {
-            res = ChatModern::ReplaceTeam(buffer[pos], CHAT_MODERN_NEW_SIZE + CHAT_MODERN_NEW_SIZE_COLOR - pos, sz(ChatModern_sTagsTeamEP1),
+            res = ChatModern.ReplaceTeam(buffer[pos], CHAT_MODERN_NEW_SIZE + CHAT_MODERN_NEW_SIZE_COLOR - pos, sz(ChatModern_sTagsTeamEP1),
                 index);
             if (res != -1)
             {
@@ -511,7 +533,7 @@ void CSayText2(EngineVersion engine, int client, char[] buffer)
     {
         for (;;)
         {
-            res = ChatModern::ReplaceTeam(buffer[pos], CHAT_MODERN_NEW_SIZE + CHAT_MODERN_NEW_SIZE_COLOR - pos, sz(ChatModern_sTagsTeam),
+            res = ChatModern.ReplaceTeam(buffer[pos], CHAT_MODERN_NEW_SIZE + CHAT_MODERN_NEW_SIZE_COLOR - pos, sz(ChatModern_sTagsTeam),
                 index);
             if (res != -1)
             {

@@ -1,1 +1,0 @@
-./spcomp_mod chatmodern.sp chatmodern_api.sp -i include_1.10 -O3 -n0 -L ru

@@ -1,19 +1,6 @@
-/**
- * Расширенные возможности чата для SourceMod 1.10+
- * 
- * https://github.com/deathscore13/ChatModern
- */
-
-#if !defined SPCOMP_MOD
-#error Для сборки проекта необходим spcomp_mod
-#endif
-
-#define PUBVAR_MAXCLIENTS
-
 #include <sourcemod>
 #include <sdktools>
 #include <macros>
-
 #include <chatmodern>
 
 #define TV_CVAR 0   /**< sm_chatmodern_tv */
@@ -270,3 +257,5 @@ bool SafeKick(int bot)
     }
     return false;
 }
+
+#include "chatmodern_api.sp"
