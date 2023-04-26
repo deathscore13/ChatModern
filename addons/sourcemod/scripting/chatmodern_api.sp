@@ -4,10 +4,10 @@ UserMsg iTextMsg, iSayText2;
 /**
  * Возвращает конец мультибайтовой строки
  * 
- * @param buffer		Буфер для проверки
- * @param len			Длина строки
+ * @param buffer        Буфер для проверки
+ * @param len           Длина строки
  * 
- * @return				Первый недействительный байт
+ * @return              Первый недействительный байт
  */
 stock int EndMultibyteStr(const char[] buffer, int len)
 {

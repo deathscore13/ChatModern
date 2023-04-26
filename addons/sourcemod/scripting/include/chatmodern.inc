@@ -181,11 +181,11 @@ stock const char ChatModern_sTagOld[] = "{old}";    /**< Тег для прим�
 /**
  * Поиск последнего вхождения подстроки
  * 
- * @param buffer			Буфер для проверки
- * @param substr			Подстрока
- * @param caseSensitive		Учитывать регистр (по умолчанию true)
+ * @param buffer            Буфер для проверки
+ * @param substr            Подстрока
+ * @param caseSensitive     Учитывать регистр (по умолчанию true)
  * 
- * @return					Индекс начала последнего вхождения подстроки или -1 если не найдено
+ * @return                  Индекс начала последнего вхождения подстроки или -1 если не найдено
  */
 stock int FindEndSubStr(const char[] buffer, const char[] substr, bool caseSensitive = true)
 {
@@ -405,17 +405,30 @@ methodmap ChatModern __nullable__
      * 
      * @return              Позиция тега или -1 если не найдено
      */
-    public static int FindPersonalHEX(char[] buffer, int maxlen, int &code = 0, bool end = false)
+    public static int FindPersonalHEX(const char[] buffer, int &code = 0, bool end = false)
     {
         if (end)
         {
-            int i = strlen(buffer);
+            int i = strlen(buffer), pos;
             while (0 <= --i)
             {
                 if (0 <= i - 8 &&
                     buffer[i] == CHAT_MODERN_HEX_PERSONAL_END && buffer[i - 7] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
                     buffer[i - 8] == CHAT_MODERN_HEX_PERSONAL_START)
                 {
+                    pos = 1;
+#if CHAT_MODERN_TAGS_CSENSITIVE
+                    while ('`' < buffer[i - pos] && buffer[i - pos] < 'g' && ++pos < 7)
+#else
+                    while (('`' < buffer[i - pos] && buffer[i - pos] < 'g' ||
+                        '@' < buffer[i - pos] && buffer[i - pos] < 'G') &&
+                        ++pos < 7)
+#endif
+                        continue;
+
+                    if (pos < 7)
+                        continue;
+
                     code = 7;
                     return i - 8;
                 }
@@ -423,6 +436,19 @@ methodmap ChatModern __nullable__
                     buffer[i] == CHAT_MODERN_HEX_PERSONAL_END && buffer[i - 9] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
                     buffer[i - 10] == CHAT_MODERN_HEX_PERSONAL_START)
                 {
+                    pos = 1;
+#if CHAT_MODERN_TAGS_CSENSITIVE
+                    while ('`' < buffer[i - pos] && buffer[i - pos] < 'g' && ++pos < 9)
+#else
+                    while (('`' < buffer[i - pos] && buffer[i - pos] < 'g' ||
+                        '@' < buffer[i - pos] && buffer[i - pos] < 'G') &&
+                        ++pos < 9)
+#endif
+                        continue;
+
+                    if (pos < 9)
+                        continue;
+
                     code = 8;
                     return i - 10;
                 }
@@ -430,20 +456,46 @@ methodmap ChatModern __nullable__
         }
         else
         {
-            int i = -1;
+            int i = -1, len = strlen(buffer), pos;
             while (buffer[++i])
             {
-                if (i + 8 < maxlen &&
+                if (i + 8 < len &&
                     buffer[i] == CHAT_MODERN_HEX_PERSONAL_START && buffer[i + 1] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
                     buffer[i + 8] == CHAT_MODERN_HEX_PERSONAL_END)
                 {
+                    pos = 2;
+#if CHAT_MODERN_TAGS_CSENSITIVE
+                    while ('`' < buffer[i + pos] && buffer[i + pos] < 'g' && ++pos < 8)
+#else
+                    while (('`' < buffer[i + pos] && buffer[i + pos] < 'g' ||
+                        '@' < buffer[i + pos] && buffer[i + pos] < 'G') &&
+                        ++pos < 8)
+#endif
+                        continue;
+
+                    if (pos < 8)
+                        continue;
+
                     code = 7;
                     return i;
                 }
-                else if (i + 10 < maxlen &&
+                else if (i + 10 < len &&
                     buffer[i] == CHAT_MODERN_HEX_PERSONAL_START && buffer[i + 1] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
                     buffer[i + 10] == CHAT_MODERN_HEX_PERSONAL_END)
                 {
+                    pos = 2;
+#if CHAT_MODERN_TAGS_CSENSITIVE
+                    while ('`' < buffer[i + pos] && buffer[i + pos] < 'g' && ++pos < 10)
+#else
+                    while (('`' < buffer[i + pos] && buffer[i + pos] < 'g' ||
+                        '@' < buffer[i + pos] && buffer[i + pos] < 'G') &&
+                        ++pos < 10)
+#endif
+                        continue;
+
+                    if (pos < 10)
+                        continue;
+
                     code = 8;
                     return i;
                 }
@@ -460,7 +512,7 @@ methodmap ChatModern __nullable__
     public static void ReplacePersonalHEX(char[] buffer, int maxlen)
     {
         int pos, code;
-        while ((pos = ChatModern.FindPersonalHEX(buffer, maxlen, code)) != -1)
+        while ((pos = ChatModern.FindPersonalHEX(buffer, code)) != -1)
         {
             if (code == 7)
             {
@@ -660,7 +712,7 @@ methodmap ChatModern __nullable__
                         pos = res;
                 }
                 
-                if (pos < (res = ChatModern.FindPersonalHEX(buffer, maxlen, _, true)))
+                if (pos < (res = ChatModern.FindPersonalHEX(buffer, _, true)))
                     pos = res;
 
                 index = type = 0;
@@ -690,7 +742,7 @@ methodmap ChatModern __nullable__
                         }
                     }
 
-                    if (pos2 < (res = ChatModern.FindPersonalHEX(buffer, maxlen, type, true)))
+                    if (pos2 < (res = ChatModern.FindPersonalHEX(buffer, type, true)))
                         pos2 = res;
 
                     buffer[pos] = chr;
