@@ -108,7 +108,12 @@ public void OnPluginStart()
 {
     // создание объекта ChatModern
     chatm = new ChatModern(GetEngineVersion());
-    
+
+    RegConsoleCmd("sm_example", ConsoleCmd_example);
+}
+
+Action ConsoleCmd_example(int client, int args)
+{
     // вывод очень большого текста
     chatm.CPrintToChatAll("{default}переполнение буфера {gold}переполнение буфера \
         {lightgreen}переполнение буфера {green}переполнение буфера {grey}переполнение буфера \
