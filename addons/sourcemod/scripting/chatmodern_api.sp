@@ -80,7 +80,7 @@ int Native_CTextMsg(Handle plugin, int numParams)
         case CHAT_MODERN_HEX_SUPPORT_CASE:
         {
             ChatModern.ReplaceHEX(sz(buffer), sz(ChatModern_sTagsHEX), ChatModern_sCodesHEX);
-            ChatModern.ReplacePersonalHEX(sz(buffer));
+            ChatModern.ReplaceCustomHEX(sz(buffer));
         }
 
         default:
@@ -184,7 +184,7 @@ int Native_CPrintToChat(Handle plugin, int numParams)
         if (CHAT_MODERN_HEX_SUPPORT(engine))
         {
             ChatModern.ReplaceHEX(sz(buffer), sz(ChatModern_sTagsHEX), ChatModern_sCodesHEX);
-            ChatModern.ReplacePersonalHEX(sz(buffer));
+            ChatModern.ReplaceCustomHEX(sz(buffer));
         }
         else
         {

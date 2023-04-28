@@ -16,6 +16,7 @@
 #define CHAT_MODERN_SIZE 192                /**< Безопасный размер чата */
 #define CHAT_MODERN_SIZE_COLOR 9            /**< Максимальный размер цвета */
 
+#define CHAT_MODERN_TAGS_UCASE false        /**< Основной регистр (false - нижний, true - верхний) */
 #define CHAT_MODERN_TAGS_CSENSITIVE false   /**< Чувствительность тегов к регистру */
 
 /**
@@ -44,10 +45,17 @@
 
 // Цвета Engine_SourceSDK2006
 stock char ChatModern_sTagsEP1[][] = {
+#if CHAT_MODERN_TAGS_UCASE
+    /* 00 */    "{DEFAULT}",
+    /* 01 */    "{GOLD}",
+    /* 02 */    "{LIGHTGREEN}",
+    /* 03 */    "{GREEN}"
+#else
     /* 00 */    "{default}",
     /* 01 */    "{gold}",
     /* 02 */    "{lightgreen}",
     /* 03 */    "{green}"
+#endif
 };
 stock int ChatModern_iCodesEP1[] = {
     /* 00 */    1,
@@ -57,13 +65,23 @@ stock int ChatModern_iCodesEP1[] = {
 };
 
 stock char ChatModern_sTagsTeamEP1[][] = {
+#if CHAT_MODERN_TAGS_UCASE
+    /* 00 */    "{TEAM}",
+    /* 01 */    "{TEAM1}",
+    /* 02 */    "{TEAM2}",
+    /* 03 */    "{TEAM3}",
+    /* 04 */    "{GREY}",
+    /* 05 */    "{RED}",
+    /* 06 */    "{BLUE}"
+#else
     /* 00 */    "{team}",
     /* 01 */    "{team1}",
     /* 02 */    "{team2}",
     /* 03 */    "{team3}",
     /* 04 */    "{grey}",
     /* 05 */    "{red}",
-    /* 06 */    "{blue}",
+    /* 06 */    "{blue}"
+#endif
 };
 stock int ChatModern_iTeamEP1[] = {
     /* 00 */    0,  // текущая команда
@@ -77,6 +95,23 @@ stock int ChatModern_iTeamEP1[] = {
 
 // Цвета для игр поддерживаемых HEX
 stock char ChatModern_sTagsHEX[][] = {
+#if CHAT_MODERN_TAGS_UCASE
+    /* 00 */    "{DEFAULT}",
+    /* 01 */    "{GREEN}",
+    /* 02 */    "{LIME}",
+    /* 03 */    "{LIGHTGREEN}",
+    /* 04 */    "{DARKRED}",
+    /* 05 */    "{PURPLE}",
+    /* 06 */    "{RED}",
+    /* 07 */    "{GREY}",
+    /* 08 */    "{YELLOW}",
+    /* 09 */    "{BLUE}",
+    /* 10 */    "{DARKBLUE}",
+    /* 11 */    "{BLUEGREY}",
+    /* 12 */    "{PINK}",
+    /* 13 */    "{LIGHTRED}",
+    /* 14 */    "{GOLD}"
+#else
     /* 00 */    "{default}",
     /* 01 */    "{green}",
     /* 02 */    "{lime}",
@@ -92,11 +127,14 @@ stock char ChatModern_sTagsHEX[][] = {
     /* 12 */    "{pink}",
     /* 13 */    "{lightred}",
     /* 14 */    "{gold}"
+#endif
 };
 stock char ChatModern_sCodesHEX[][] = {
     /* 00 */    {1},
     /* 01 */    {4},
     /* 02 */    {5},
+// чтобы регистр юзерских тегов ({#FFFFFF}) и предопределённых кодов цветов совпадал при true в CHAT_MODERN_TAGS_CSENSITIVE
+#if CHAT_MODERN_TAGS_UCASE
     /* 03 */    "\x07BFFE90",   // чтобы не использовать {3} и не разбивать текст в ChatModern.CPrintToChat
     /* 04 */    "\x07FF0000",
     /* 05 */    "\x07B880EF",
@@ -109,6 +147,20 @@ stock char ChatModern_sCodesHEX[][] = {
     /* 12 */    "\x07D22CE3",
     /* 13 */    "\x07EA4B4B",
     /* 14 */    "\x07E0AD40"
+#else
+    /* 03 */    "\x07bffe90",
+    /* 04 */    "\x07ff0000",
+    /* 05 */    "\x07b880ef",
+    /* 06 */    "\x07ff4040",
+    /* 07 */    "\x07c9c9c9",
+    /* 08 */    "\x07ece479",
+    /* 09 */    "\x075c96d6",
+    /* 10 */    "\x074c6aff",
+    /* 11 */    "\x07b0c2d8",
+    /* 12 */    "\x07d22ce3",
+    /* 13 */    "\x07ea4b4b",
+    /* 14 */    "\x07e0ad40"
+#endif
 };
 
 stock int ChatModern_iCodesHEX1[] = {
@@ -120,12 +172,29 @@ stock int ChatModern_iCodesHEX1[] = {
     /* 05 */    8
 };
 
-#define CHAT_MODERN_HEX_PERSONAL_START '{'      /**< Начало персонального HEX тега */
-#define CHAT_MODERN_HEX_PERSONAL_HEADER '#'     /**< Заголовок персонального HEX тега */
-#define CHAT_MODERN_HEX_PERSONAL_END '}'        /**< Конец персонального HEX тега */
+#define CHAT_MODERN_HEX_CUSTOM_START '{'      /**< Начало пользовательского HEX тега */
+#define CHAT_MODERN_HEX_CUSTOM_HEADER '#'     /**< Заголовок пользовательского HEX тега */
+#define CHAT_MODERN_HEX_CUSTOM_END '}'        /**< Конец пользовательского HEX тега */
 
 // Цвета для остальных игр
 stock char ChatModern_sTags[][] = {
+#if CHAT_MODERN_TAGS_UCASE
+    /* 00 */    "{DEFAULT}",
+    /* 01 */    "{DARKRED}",
+    /* 02 */    "{PURPLE}",
+    /* 03 */    "{GREEN}",
+    /* 04 */    "{LIGHTGREEN}",
+    /* 05 */    "{LIME}",
+    /* 06 */    "{RED}",
+    /* 07 */    "{GREY}",
+    /* 08 */    "{YELLOW}",
+    /* 09 */    "{BLUE}",
+    /* 10 */    "{DARKBLUE}",
+    /* 11 */    "{BLUEGREY}",
+    /* 12 */    "{PINK}",
+    /* 13 */    "{LIGHTRED}",
+    /* 14 */    "{GOLD}"
+#else
     /* 00 */    "{default}",
     /* 01 */    "{darkred}",
     /* 02 */    "{purple}",
@@ -141,6 +210,7 @@ stock char ChatModern_sTags[][] = {
     /* 12 */    "{pink}",
     /* 13 */    "{lightred}",
     /* 14 */    "{gold}"
+#endif
 };
 stock int ChatModern_iCodes[] = {
     /* 00 */    1,
@@ -162,10 +232,17 @@ stock int ChatModern_iCodes[] = {
 
 // Для HEX и остальных
 stock char ChatModern_sTagsTeam[][] = {
+#if CHAT_MODERN_TAGS_UCASE
+    /* 00 */    "{TEAM}",
+    /* 01 */    "{TEAM1}",
+    /* 02 */    "{TEAM2}",
+    /* 03 */    "{TEAM3}"
+#else
     /* 00 */    "{team}",
     /* 01 */    "{team1}",
     /* 02 */    "{team2}",
     /* 03 */    "{team3}"
+#endif
 };
 stock int ChatModern_iTeam[] = {
     /* 00 */    0,  // текущая команда
@@ -405,24 +482,33 @@ methodmap ChatModern __nullable__
      * 
      * @return              Позиция тега или -1 если не найдено
      */
-    public static int FindPersonalHEX(const char[] buffer, int &code = 0, bool end = false)
+    public static int FindCustomHEX(const char[] buffer, int &code = 0, bool end = false)
     {
         if (end)
         {
-            int i = strlen(buffer), pos;
+            int i = strlen(buffer), pos, offset;
             while (0 <= --i)
             {
                 if (0 <= i - 8 &&
-                    buffer[i] == CHAT_MODERN_HEX_PERSONAL_END && buffer[i - 7] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
-                    buffer[i - 8] == CHAT_MODERN_HEX_PERSONAL_START)
+                    buffer[i] == CHAT_MODERN_HEX_CUSTOM_END && buffer[i - 7] == CHAT_MODERN_HEX_CUSTOM_HEADER &&
+                    buffer[i - 8] == CHAT_MODERN_HEX_CUSTOM_START)
                 {
                     pos = 1;
 #if CHAT_MODERN_TAGS_CSENSITIVE
-                    while ('`' < buffer[i - pos] && buffer[i - pos] < 'g' && ++pos < 7)
+#if CHAT_MODERN_TAGS_UCASE
+                    while (('/' < buffer[(offset = i - pos)] && buffer[offset] < ':' ||
+                        '@' < buffer[offset] && buffer[offset] < 'G')
+                        && ++pos < 7)
 #else
-                    while (('`' < buffer[i - pos] && buffer[i - pos] < 'g' ||
-                        '@' < buffer[i - pos] && buffer[i - pos] < 'G') &&
-                        ++pos < 7)
+                    while (('/' < buffer[(offset = i - pos)] && buffer[offset] < ':' ||
+                        '`' < buffer[offset] && buffer[offset] < 'g')
+                        && ++pos < 7)
+#endif
+#else
+                    while (('/' < buffer[(offset = i - pos)] && buffer[offset] < ':' ||
+                        '`' < buffer[offset] && buffer[offset] < 'g' ||
+                        '@' < buffer[offset] && buffer[offset] < 'G')
+                        && ++pos < 7)
 #endif
                         continue;
 
@@ -433,16 +519,25 @@ methodmap ChatModern __nullable__
                     return i - 8;
                 }
                 else if (0 <= i - 10 &&
-                    buffer[i] == CHAT_MODERN_HEX_PERSONAL_END && buffer[i - 9] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
-                    buffer[i - 10] == CHAT_MODERN_HEX_PERSONAL_START)
+                    buffer[i] == CHAT_MODERN_HEX_CUSTOM_END && buffer[i - 9] == CHAT_MODERN_HEX_CUSTOM_HEADER &&
+                    buffer[i - 10] == CHAT_MODERN_HEX_CUSTOM_START)
                 {
                     pos = 1;
 #if CHAT_MODERN_TAGS_CSENSITIVE
-                    while ('`' < buffer[i - pos] && buffer[i - pos] < 'g' && ++pos < 9)
+#if CHAT_MODERN_TAGS_UCASE
+                    while (('/' < buffer[(offset = i - pos)] && buffer[offset] < ':' ||
+                        '@' < buffer[offset] && buffer[offset] < 'G')
+                        && ++pos < 9)
 #else
-                    while (('`' < buffer[i - pos] && buffer[i - pos] < 'g' ||
-                        '@' < buffer[i - pos] && buffer[i - pos] < 'G') &&
-                        ++pos < 9)
+                    while (('/' < buffer[(offset = i - pos)] && buffer[offset] < ':' ||
+                        '`' < buffer[offset] && buffer[offset] < 'g')
+                        && ++pos < 9)
+#endif
+#else
+                    while (('/' < buffer[(offset = i - pos)] && buffer[offset] < ':' ||
+                        '`' < buffer[offset] && buffer[offset] < 'g' ||
+                        '@' < buffer[offset] && buffer[offset] < 'G')
+                        && ++pos < 9)
 #endif
                         continue;
 
@@ -456,20 +551,29 @@ methodmap ChatModern __nullable__
         }
         else
         {
-            int i = -1, len = strlen(buffer), pos;
+            int i = -1, len = strlen(buffer), pos, offset;
             while (buffer[++i])
             {
                 if (i + 8 < len &&
-                    buffer[i] == CHAT_MODERN_HEX_PERSONAL_START && buffer[i + 1] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
-                    buffer[i + 8] == CHAT_MODERN_HEX_PERSONAL_END)
+                    buffer[i] == CHAT_MODERN_HEX_CUSTOM_START && buffer[i + 1] == CHAT_MODERN_HEX_CUSTOM_HEADER &&
+                    buffer[i + 8] == CHAT_MODERN_HEX_CUSTOM_END)
                 {
                     pos = 2;
 #if CHAT_MODERN_TAGS_CSENSITIVE
-                    while ('`' < buffer[i + pos] && buffer[i + pos] < 'g' && ++pos < 8)
+#if CHAT_MODERN_TAGS_UCASE
+                    while (('/' < buffer[(offset = i + pos)] && buffer[offset] < ':' ||
+                        '@' < buffer[offset] && buffer[offset] < 'G')
+                        && ++pos < 8)
 #else
-                    while (('`' < buffer[i + pos] && buffer[i + pos] < 'g' ||
-                        '@' < buffer[i + pos] && buffer[i + pos] < 'G') &&
-                        ++pos < 8)
+                    while (('/' < buffer[(offset = i + pos)] && buffer[offset] < ':' ||
+                        '`' < buffer[offset] && buffer[offset] < 'g')
+                        && ++pos < 8)
+#endif
+#else
+                    while (('/' < buffer[(offset = i + pos)] && buffer[offset] < ':' ||
+                        '`' < buffer[offset] && buffer[offset] < 'g' ||
+                        '@' < buffer[offset] && buffer[offset] < 'G')
+                        && ++pos < 8)
 #endif
                         continue;
 
@@ -480,16 +584,25 @@ methodmap ChatModern __nullable__
                     return i;
                 }
                 else if (i + 10 < len &&
-                    buffer[i] == CHAT_MODERN_HEX_PERSONAL_START && buffer[i + 1] == CHAT_MODERN_HEX_PERSONAL_HEADER &&
-                    buffer[i + 10] == CHAT_MODERN_HEX_PERSONAL_END)
+                    buffer[i] == CHAT_MODERN_HEX_CUSTOM_START && buffer[i + 1] == CHAT_MODERN_HEX_CUSTOM_HEADER &&
+                    buffer[i + 10] == CHAT_MODERN_HEX_CUSTOM_END)
                 {
                     pos = 2;
 #if CHAT_MODERN_TAGS_CSENSITIVE
-                    while ('`' < buffer[i + pos] && buffer[i + pos] < 'g' && ++pos < 10)
+#if CHAT_MODERN_TAGS_UCASE
+                    while (('/' < buffer[(offset = i + pos)] && buffer[offset] < ':' ||
+                        '@' < buffer[offset] && buffer[offset] < 'G')
+                        && ++pos < 10)
 #else
-                    while (('`' < buffer[i + pos] && buffer[i + pos] < 'g' ||
-                        '@' < buffer[i + pos] && buffer[i + pos] < 'G') &&
-                        ++pos < 10)
+                    while (('/' < buffer[(offset = i + pos)] && buffer[offset] < ':' ||
+                        '`' < buffer[offset] && buffer[offset] < 'g')
+                        && ++pos < 10)
+#endif
+#else
+                    while (('/' < buffer[(offset = i + pos)] && buffer[offset] < ':' ||
+                        '`' < buffer[offset] && buffer[offset] < 'g' ||
+                        '@' < buffer[offset] && buffer[offset] < 'G')
+                        && ++pos < 10)
 #endif
                         continue;
 
@@ -509,22 +622,21 @@ methodmap ChatModern __nullable__
      * 
      * @param buffer        Буфер
      */
-    public static void ReplacePersonalHEX(char[] buffer, int maxlen)
+    public static void ReplaceCustomHEX(char[] buffer, int maxlen)
     {
         int pos, code;
-        while ((pos = ChatModern.FindPersonalHEX(buffer, code)) != -1)
+        while ((pos = ChatModern.FindCustomHEX(buffer, code)) != -1)
         {
             if (code == 7)
             {
                 buffer[pos] = 7;
-                buffer[pos + 1] = buffer[pos + 2];
-                buffer[pos + 2] = buffer[pos + 3];
-                buffer[pos + 3] = buffer[pos + 4];
-                buffer[pos + 4] = buffer[pos + 5];
-                buffer[pos + 5] = buffer[pos + 6];
-                buffer[pos + 6] = buffer[pos + 7];
+                buffer[++pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[pos + 1];
 
-                pos += 6;
                 while (buffer[++pos])
                     buffer[pos] = buffer[pos + 2];
                 buffer[pos + 1] = '\0';
@@ -532,16 +644,15 @@ methodmap ChatModern __nullable__
             else
             {
                 buffer[pos] = 8;
-                buffer[pos + 1] = buffer[pos + 2];
-                buffer[pos + 2] = buffer[pos + 3];
-                buffer[pos + 3] = buffer[pos + 4];
-                buffer[pos + 4] = buffer[pos + 5];
-                buffer[pos + 5] = buffer[pos + 6];
-                buffer[pos + 6] = buffer[pos + 7];
-                buffer[pos + 7] = buffer[pos + 8];
-                buffer[pos + 8] = buffer[pos + 9];
+                buffer[++pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[++pos];
+                buffer[pos] = buffer[pos + 1];
 
-                pos += 8;
                 while (buffer[++pos])
                     buffer[pos] = buffer[pos + 2];
                 buffer[pos + 1] = '\0';
@@ -712,7 +823,7 @@ methodmap ChatModern __nullable__
                         pos = res;
                 }
                 
-                if (pos < (res = ChatModern.FindPersonalHEX(buffer, _, true)))
+                if (pos < (res = ChatModern.FindCustomHEX(buffer, _, true)))
                     pos = res;
 
                 index = type = 0;
@@ -742,7 +853,7 @@ methodmap ChatModern __nullable__
                         }
                     }
 
-                    if (pos2 < (res = ChatModern.FindPersonalHEX(buffer, type, true)))
+                    if (pos2 < (res = ChatModern.FindCustomHEX(buffer, type, true)))
                         pos2 = res;
 
                     buffer[pos] = chr;
