@@ -115,7 +115,7 @@ public void OnPluginStart()
 Action ConsoleCmd_example(int client, int args)
 {
     // вывод очень большого текста
-    chatm.CPrintToChatAll("{default}переполнение буфера {gold}переполнение буфера \
+    chatm.CPrintToChat(client, "{default}переполнение буфера {gold}переполнение буфера \
         {lightgreen}переполнение буфера {green}переполнение буфера {grey}переполнение буфера \
         {red}переполнение буфера {blue}переполнение буфера {team}переполнение буфера \
         {team1}переполнение буфера {team2}переполнение буфера {team3}переполнение буфера");
