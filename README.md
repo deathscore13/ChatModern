@@ -82,7 +82,7 @@
 <br><br>
 ## Требования
 1. SourceMod 1.10+;
-2. [macros.inc](https://github.com/deathscore13/Macros) для сборки проекта.
+2. [macros.inc](https://github.com/deathscore13/macros.inc) для сборки проекта.
 
 <br><br>
 ## Установка
